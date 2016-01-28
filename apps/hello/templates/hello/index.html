@@ -11,31 +11,35 @@
             <h3 class="text-muted">42 Coffee Cups Test Project</h3>
         </div>
         <div class="jumbotron">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5><strong>{{ person.first_name }}</strong></h5>
-                    <h5><strong>{{ person.last_name }}</strong></h5>
-                    <h5><strong>Date of Birth:</strong> {{ person.birth_date }}</h5>
-                    {% if person.biography%}
-                    <h5><strong>Bio:</strong></h5>
-                    <p id="bio">{{ person.biography }}</p>
-                    {% endif %}
+            {% if person %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5><strong>{{ person.first_name }}</strong></h5>
+                        <h5><strong>{{ person.last_name }}</strong></h5>
+                        <h5><strong>Date of Birth:</strong> {{ person.birth_date }}</h5>
+                        {% if person.biography%}
+                        <h5><strong>Bio:</strong></h5>
+                        <p id="bio">{{ person.biography }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <h5><strong>Contacts</strong></h5>
+                        <h5><strong>Email:</strong> {{ person.email }}</h5>
+                        {% if person.jabber %}
+                           <h5><strong>Jabber:</strong> {{ person.jabber }}</h5>
+                        {% endif %}
+                        {% if person.skype %}
+                            <h5><strong>Skype:</strong> {{ person.skype }}</h5>
+                        {% endif %}
+                        {% if person.other_contacts %}
+                            <h5><strong>Other:</strong></h5>
+                            <p> {{ person.other_contacts }}</p>
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <h5><strong>Contacts</strong></h5>
-                    <h5><strong>Email:</strong> {{ person.email }}</h5>
-                    {% if person.jabber %}
-                       <h5><strong>Jabber:</strong> {{ person.jabber }}</h5>
-                    {% endif %}
-                    {% if person.skype %}
-                        <h5><strong>Skype:</strong> {{ person.skype }}</h5>
-                    {% endif %}
-                    {% if person.other_contacts %}
-                        <h5><strong>Other:</strong></h5>
-                        <p> {{ person.other_contacts }}</p>
-                    {% endif %}
-                </div>
-            </div>
+            {% else %}
+                <h1>No perons in the database</h1>
+            {% endif %}
         </div>
     </div>
 {% endblock content %}

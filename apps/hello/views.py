@@ -5,6 +5,8 @@ from .models import Person
 def home(request):
     """
     Returns index page with person's details"""
-
-    person = Person.objects.all()[0]
-    return render_to_response('hello/index.html', {'person': person})
+    try:
+        person = Person.objects.all()[0]
+        return render_to_response('hello/index.html', {'person': person})
+    except IndexError:
+        return render_to_response('hello/index.html', {'person': None})
