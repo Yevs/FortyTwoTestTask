@@ -6,8 +6,8 @@ from django.http import HttpResponse
 
 class JsonResponse(HttpResponse):  # not available in Django 1.6
     """
-        JSON response
-    """
+    JSON response"""
+
     def __init__(self, content,
                  mimetype='application/json', status=None, content_type=None):
         super(JsonResponse, self).__init__(
@@ -46,4 +46,5 @@ def get_requests(request, req_id):
     requests = RequestLog.objects.filter(datetime__gt=request.datetime)
     return JsonResponse([{'datetime': r.datetime.strftime('%d/%m/%Y %H:%M'),
                           'method': str(r.method),
-                          'path': str(r.path)} for r in requests])
+                          'path': str(r.path),
+                          'id': str(r.id)} for r in requests])

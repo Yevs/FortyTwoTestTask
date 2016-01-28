@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.test import Client
 from hello.models import Person, RequestLog
+import json
 
 
 class IndexTest(TestCase):
@@ -66,3 +67,18 @@ class RequestTest(TestCase):
             '                        <td>GET</td>'
             '\n                        <td>/</td>'
             '\n                    </tr>', response.content)
+
+    def test_get_request(self):
+        """
+        Tests whethe get_requests return right requests in right order"""
+
+        c = Client()
+        req = RequestLog.objects.all().first()
+        response = c.get('/api/requests/1/')
+        requests = RequestLog.objects.filter(datetime__gt=req.datetime)
+        jsoned_reqs = json.dumps([{
+                          'datetime': r.datetime.strftime('%d/%m/%Y %H:%M'),
+                          'method': str(r.method),
+                          'path': str(r.path),
+                          'id': str(r.id)} for r in requests])
+        self.assertEqual(jsoned_reqs, response.content)
