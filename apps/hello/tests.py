@@ -1,9 +1,11 @@
 from django.test import TestCase
 from django.test import Client
-from hello.models import Person
+from hello.models import Person, RequestLog
 
 
 class IndexTest(TestCase):
+
+    fixtures = ['initial_data.json']
 
     def test_person_amount(self):
         """
@@ -39,16 +41,28 @@ class IndexTest(TestCase):
 
 class RequestTest(TestCase):
 
+    fixtures = ['request_fixtures.json']
+
+    def test_middleware(self):
+        """
+        Tests whether request is getting written to db"""
+
+        old_amount = len(RequestLog.objects.all())
+        Client().get('/')
+        new_amount = len(RequestLog.objects.all())
+        self.assertEqual(new_amount-old_amount, 1)
+
     def test_request_page(self):
         """
         Tests whether requests page accessible and if data is there"""
 
         c = Client()
-        response = c.get('/requests')
+        response = c.get('/requests/')
         self.assertEqual(response.status_code, 200)
-        self.assertIsNotNoe(response.context['requests'])
-        self.assertIn('<tr>'
-'                        <td>28/Jan/2016 10:42</td>'
-'                        <td>GET</td>'
-'                        <td>/</td>'
-'                    </tr>', response.content)
+        self.assertIsNotNone(response.context['requests'])
+        self.assertIn(
+            '<tr>\n                        <td>'
+            '28/01/2016 13:01</td>\n'
+            '                        <td>GET</td>'
+            '\n                        <td>/</td>'
+            '\n                    </tr>', response.content)

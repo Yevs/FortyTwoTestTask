@@ -19,7 +19,7 @@
                 </tr>
                 {% for request in requests %}
                     <tr>
-                        <td>{{ request.datetime }}</td>
+                        <td>{{ request.datetime|date:'d/m/Y H:m' }}</td>
                         <td>{{ request.method }}</td>
                         <td>{{ request.path }}</td>
                     </tr>
