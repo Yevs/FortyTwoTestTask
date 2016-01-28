@@ -1,0 +1,41 @@
+.container {
+    max-width: 730px;
+}
+
+.row p {
+    font-size: 1em;
+}
+
+.header ul {
+    margin-top: 10px;
+}
+
+#separator {
+    width: 100%;
+    margin-right: 20px;
+    border: 1px solid black;
+}
+
+.row header {
+    margin-top: 5px;
+    font-size: 1.2em;
+    text-align: center;
+    font-weight: bold;
+}
+
+#new-requests {
+    width: 100%;
+    background-color: #716b6b;
+    padding: 10px;
+    text-align: center;
+    color: white;
+}
+
+#new-requests:hover {
+    cursor: pointer;
+    background-color: #888181;
+}
+
+#table-headers {
+    font-weight: bold;
+}
