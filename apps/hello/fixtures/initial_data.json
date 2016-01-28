@@ -12,5 +12,23 @@
       "jabber": "yevs@42cc.co",
       "other_contacts": "phone: 0971339340"
     }
+  },
+  {  
+    "pk":1,
+    "model":"auth.user",
+    "fields":{  
+       "username":"admin",
+       "first_name":"",
+       "last_name":"",
+       "is_active":true,
+       "is_superuser":true,
+       "is_staff":true,
+       "last_login":"2016-01-28T08:38:11.654Z",
+       "groups":[],
+       "user_permissions":[],
+       "password":"pbkdf2_sha256$12000$c1GvcmteNBde$u2+G7esUsslOKFPIYkB29NjinJ9nwBwI+ZM/A/n0qH0=",
+       "email":"admin@admin.com",
+       "date_joined":"2016-01-28T07:49:59.936Z"
+    }
   }
 ]
