@@ -15,3 +15,4 @@ media
 static
 *.dat
 .env
+fortytwo_test_task/settings/local.py
