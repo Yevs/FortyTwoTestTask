@@ -14,3 +14,14 @@ class Person(models.Model):
 
     def __unicode__(self):
         return self.first_name + ' ' + self.last_name
+
+
+class RequestLog(models.Model):
+    datetime = models.DateTimeField(blank=False)
+    method = models.CharField(blank=False, max_length=40)
+    path = models.CharField(blank=False, max_length=40)
+
+    def __unicode__(self):
+        return \
+            self.datetime.strftime('%d/%b/%Y %H:%M') +\
+            ' ' + self.method + ' ' + self.path

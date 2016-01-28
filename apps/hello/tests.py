@@ -1,9 +1,12 @@
 from django.test import TestCase
 from django.test import Client
-from hello.models import Person
+from hello.models import Person, RequestLog
+import json
 
 
 class IndexTest(TestCase):
+
+    fixtures = ['initial_data.json']
 
     def test_person_amount(self):
         """
@@ -35,3 +38,47 @@ class IndexTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIsNone(response.context['person'])
         self.assertIn('No persons in the database', response.content)
+
+
+class RequestTest(TestCase):
+
+    fixtures = ['request_fixtures.json']
+
+    def test_middleware(self):
+        """
+        Tests whether request is getting written to db"""
+
+        old_amount = len(RequestLog.objects.all())
+        Client().get('/')
+        new_amount = len(RequestLog.objects.all())
+        self.assertEqual(new_amount-old_amount, 1)
+
+    def test_request_page(self):
+        """
+        Tests whether requests page accessible and if data is there"""
+
+        c = Client()
+        response = c.get('/requests/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.context['requests'])
+        self.assertIn(
+            '<tr>\n                        <td>'
+            '28/01/2016 13:01</td>\n'
+            '                        <td>GET</td>'
+            '\n                        <td>/</td>'
+            '\n                    </tr>', response.content)
+
+    def test_get_request(self):
+        """
+        Tests whethe get_requests return right requests in right order"""
+
+        c = Client()
+        req = RequestLog.objects.all().first()
+        response = c.get('/api/requests/1/')
+        requests = RequestLog.objects.filter(datetime__gt=req.datetime)
+        jsoned_reqs = json.dumps([{
+                          'datetime': r.datetime.strftime('%d/%m/%Y %H:%M'),
+                          'method': str(r.method),
+                          'path': str(r.path),
+                          'id': str(r.id)} for r in requests])
+        self.assertEqual(jsoned_reqs, response.content)
