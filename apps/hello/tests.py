@@ -5,7 +5,6 @@ from hello.models import Person
 
 class IndexTest(TestCase):
 
-
     def test_person_amount(self):
         """
         Tests whether there is no more than one person in the database"""
