@@ -35,3 +35,20 @@ class IndexTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIsNone(response.context['person'])
         self.assertIn('No persons in the database', response.content)
+
+
+class RequestTest(TestCase):
+
+    def test_request_page(self):
+        """
+        Tests whether requests page accessible and if data is there"""
+
+        c = Client()
+        response = c.get('/requests')
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNoe(response.context['requests'])
+        self.assertIn('<tr>'
+'                        <td>28/Jan/2016 10:42</td>'
+'                        <td>GET</td>'
+'                        <td>/</td>'
+'                    </tr>', response.content)
