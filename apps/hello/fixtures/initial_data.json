@@ -1,1 +1,38 @@
-[{"pk": 1, "model": "contenttypes.contenttype", "fields": {"model": "logentry", "name": "log entry", "app_label": "admin"}}, {"pk": 2, "model": "contenttypes.contenttype", "fields": {"model": "permission", "name": "permission", "app_label": "auth"}}, {"pk": 3, "model": "contenttypes.contenttype", "fields": {"model": "group", "name": "group", "app_label": "auth"}}, {"pk": 4, "model": "contenttypes.contenttype", "fields": {"model": "user", "name": "user", "app_label": "auth"}}, {"pk": 5, "model": "contenttypes.contenttype", "fields": {"model": "contenttype", "name": "content type", "app_label": "contenttypes"}}, {"pk": 6, "model": "contenttypes.contenttype", "fields": {"model": "session", "name": "session", "app_label": "sessions"}}, {"pk": 7, "model": "contenttypes.contenttype", "fields": {"model": "migrationhistory", "name": "migration history", "app_label": "south"}}, {"pk": 8, "model": "contenttypes.contenttype", "fields": {"model": "person", "name": "person", "app_label": "hello"}}, {"pk": "is6eshbit5y29j8k9rw2fnf8b9an1h1h", "model": "sessions.session", "fields": {"expire_date": "2016-02-11T08:57:08.181Z", "session_data": "ZTJjMGJjYjAzNzk2NGJjZjJkZTdhYzZmZWIzYzgzMDIyZjg5MThjYTp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0="}}, {"pk": 1, "model": "hello.person", "fields": {"first_name": "Yevhen", "last_name": "Yevsyuhov", "other_contacts": "phone: 0971339340", "skype": "yevhen.yevsyuhov", "birth_date": "1997-09-16", "jabber": "yevs@42cc.co", "email": "yevhen.yevsyuhov@gmail.com", "biography": "I was born 16th of September in 1997.  During my childhood I liked to play videogames a lot.  That's what made me curious about computers and how they work. Now I am receiving CS Bachelor degree at NTUU 'KPI'"}}, {"pk": 1, "model": "south.migrationhistory", "fields": {"applied": "2016-01-28T08:56:34.267Z", "app_name": "hello", "migration": "0001_initial"}}, {"pk": 2, "model": "south.migrationhistory", "fields": {"applied": "2016-01-28T08:56:34.414Z", "app_name": "hello", "migration": "0002_loadfixtures"}}, {"pk": 1, "model": "auth.permission", "fields": {"codename": "add_logentry", "name": "Can add log entry", "content_type": 1}}, {"pk": 2, "model": "auth.permission", "fields": {"codename": "change_logentry", "name": "Can change log entry", "content_type": 1}}, {"pk": 3, "model": "auth.permission", "fields": {"codename": "delete_logentry", "name": "Can delete log entry", "content_type": 1}}, {"pk": 4, "model": "auth.permission", "fields": {"codename": "add_permission", "name": "Can add permission", "content_type": 2}}, {"pk": 5, "model": "auth.permission", "fields": {"codename": "change_permission", "name": "Can change permission", "content_type": 2}}, {"pk": 6, "model": "auth.permission", "fields": {"codename": "delete_permission", "name": "Can delete permission", "content_type": 2}}, {"pk": 7, "model": "auth.permission", "fields": {"codename": "add_group", "name": "Can add group", "content_type": 3}}, {"pk": 8, "model": "auth.permission", "fields": {"codename": "change_group", "name": "Can change group", "content_type": 3}}, {"pk": 9, "model": "auth.permission", "fields": {"codename": "delete_group", "name": "Can delete group", "content_type": 3}}, {"pk": 10, "model": "auth.permission", "fields": {"codename": "add_user", "name": "Can add user", "content_type": 4}}, {"pk": 11, "model": "auth.permission", "fields": {"codename": "change_user", "name": "Can change user", "content_type": 4}}, {"pk": 12, "model": "auth.permission", "fields": {"codename": "delete_user", "name": "Can delete user", "content_type": 4}}, {"pk": 13, "model": "auth.permission", "fields": {"codename": "add_contenttype", "name": "Can add content type", "content_type": 5}}, {"pk": 14, "model": "auth.permission", "fields": {"codename": "change_contenttype", "name": "Can change content type", "content_type": 5}}, {"pk": 15, "model": "auth.permission", "fields": {"codename": "delete_contenttype", "name": "Can delete content type", "content_type": 5}}, {"pk": 16, "model": "auth.permission", "fields": {"codename": "add_session", "name": "Can add session", "content_type": 6}}, {"pk": 17, "model": "auth.permission", "fields": {"codename": "change_session", "name": "Can change session", "content_type": 6}}, {"pk": 18, "model": "auth.permission", "fields": {"codename": "delete_session", "name": "Can delete session", "content_type": 6}}, {"pk": 19, "model": "auth.permission", "fields": {"codename": "add_migrationhistory", "name": "Can add migration history", "content_type": 7}}, {"pk": 20, "model": "auth.permission", "fields": {"codename": "change_migrationhistory", "name": "Can change migration history", "content_type": 7}}, {"pk": 21, "model": "auth.permission", "fields": {"codename": "delete_migrationhistory", "name": "Can delete migration history", "content_type": 7}}, {"pk": 22, "model": "auth.permission", "fields": {"codename": "add_person", "name": "Can add person", "content_type": 8}}, {"pk": 23, "model": "auth.permission", "fields": {"codename": "change_person", "name": "Can change person", "content_type": 8}}, {"pk": 24, "model": "auth.permission", "fields": {"codename": "delete_person", "name": "Can delete person", "content_type": 8}}, {"pk": 1, "model": "auth.user", "fields": {"username": "admin", "first_name": "", "last_name": "", "is_active": true, "is_superuser": true, "is_staff": true, "last_login": "2016-01-28T08:57:08.079Z", "groups": [], "user_permissions": [], "password": "pbkdf2_sha256$12000$c1GvcmteNBde$u2+G7esUsslOKFPIYkB29NjinJ9nwBwI+ZM/A/n0qH0=", "email": "admin@admin.com", "date_joined": "2016-01-28T07:49:59.936Z"}}]
+[
+   {  
+      "pk":1,
+      "model":"hello.person",
+      "fields":{  
+         "first_name":"Yevhen",
+         "last_name":"Yevsyuhov",
+         "other_contacts":"phone: 0971339340",
+         "skype":"yevhen.yevsyuhov",
+         "birth_date":"1997-09-16",
+         "jabber":"yevs@42cc.co",
+         "email":"yevhen.yevsyuhov@gmail.com",
+         "biography":"I was born 16th of September in 1997.  During my childhood I liked to play videogames a lot.  That's what made me curious about computers and how they work. Now I am receiving CS Bachelor degree at NTUU 'KPI'"
+      }
+   },
+   {  
+      "pk":1,
+      "model":"auth.user",
+      "fields":{  
+         "username":"admin",
+         "first_name":"",
+         "last_name":"",
+         "is_active":true,
+         "is_superuser":true,
+         "is_staff":true,
+         "last_login":"2016-01-28T08:57:08.079Z",
+         "groups":[  
+
+         ],
+         "user_permissions":[  
+
+         ],
+         "password":"pbkdf2_sha256$12000$c1GvcmteNBde$u2+G7esUsslOKFPIYkB29NjinJ9nwBwI+ZM/A/n0qH0=",
+         "email":"admin@admin.com",
+         "date_joined":"2016-01-28T07:49:59.936Z"
+      }
+   }
+]
