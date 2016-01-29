@@ -21,7 +21,7 @@ def home(request):
     """
     Returns index page with person's details"""
 
-    person = Person.objects.all().first()
+    person = Person.objects.all().order_by('id').first()
     return render_to_response('hello/index.html', {'person': person})
 
 

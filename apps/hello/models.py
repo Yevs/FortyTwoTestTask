@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 from django.db import models
-from django.core.exceptions import ValidationError
 
 
 class Person(models.Model):
@@ -12,17 +11,6 @@ class Person(models.Model):
     skype = models.CharField(max_length=40, blank=True)
     jabber = models.CharField(max_length=40, blank=True)
     other_contacts = models.TextField(blank=True)
-
-    def save(self, *args, **kwargs):
-        """
-        Validates the amount of instances in db before saving.
-        Only one at a time allowed."""
-
-        if Person.objects.count() > 0:
-            if self.id != Person.objects.first().id:
-                message = 'Can only create one instance of Person'
-                raise ValidationError(message)
-        super(Person, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.first_name + ' ' + self.last_name
