@@ -42,9 +42,9 @@ def get_requests(request, req_id):
     Returns all requests that happened since last request ordered by datetime.
     If request does not have req_id key then HTTP 400 is returned"""
 
-    request = get_object_or_404(RequestLog, pk=req_id)
+    req = get_object_or_404(RequestLog, pk=req_id)
     requests = RequestLog.objects.exclude(path__contains='/api/')\
-                                 .filter(datetime__gt=request.datetime)
+                                 .filter(datetime__gt=req.datetime)
     data = [{'datetime': r.datetime.strftime('%d/%m/%Y %H:%M'),
              'method': str(r.method),
              'path': str(r.path),
