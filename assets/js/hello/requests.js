@@ -2,12 +2,11 @@ var last_req_id = -1;
 var domain = document.location.origin;
 var focused = document.hasFocus();
 var req_queue = [];
+var done_last_update = true; // in case request will take more than a second
 
 $(window).focus(function() {
     focused = true;
     document.title = 'Requests';
-    req_queue.forEach(add_req_to_table);
-    req_queue = [];
 })
 .blur(function() {
     focused = false;
@@ -32,20 +31,30 @@ function add_req_to_table(req) {
 }
 
 function process_requests() {
-    $.get(domain + '/api/requests/' + get_last_request_id() + '/', 
-        function process_data(data) {
-            console.log(data);
+    if (done_last_update) {
+        done_last_update = false;
+        var url = domain + '/api/requests/' + get_last_request_id() + '/';
+        $.get(url, function process_data(data) {
             var reqs = JSON.parse(data);
             if (reqs.length > 0) {
-                last_req_id = reqs[0]['id'];
+                last_req_id = reqs[reqs.length - 1]['id'];
             }
             req_queue.push.apply(req_queue, reqs);
             if (!focused) {
                 if (req_queue.length > 0) {
                     document.title = '(' + req_queue.length + ') Requests';
                 }
+            } else {
+                req_queue.forEach(add_req_to_table);
+                req_queue = [];
             }
-    });
+            done_last_update = true;
+        })
+        .fail(function() {
+            done_last_update = true;
+        })
+    }
 }
 
-setInterval(process_requests, 300);
+process_requests();
+setInterval(process_requests, 1000);

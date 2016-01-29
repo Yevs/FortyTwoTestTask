@@ -5,6 +5,7 @@ from django.utils import timezone
 class RequestLoggerMiddleware(object):
 
     def process_request(self, request):
-        RequestLog(datetime=timezone.now(),
-                   method=request.method, path=request.path).save()
+        if '/api/' not in request.path:
+            RequestLog(datetime=timezone.now(),
+                       method=request.method, path=request.path).save()
         return None
