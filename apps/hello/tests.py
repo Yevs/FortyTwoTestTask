@@ -8,12 +8,6 @@ class IndexTest(TestCase):
 
     fixtures = ['initial_data.json']
 
-    def test_person_amount(self):
-        """
-        Tests whether there is no more than one person in the database"""
-
-        self.assertLessEqual(len(Person.objects.all()), 1)
-
     def test_indexpage(self):
         """
         Tests whether GET to '/' returns response with 200 status code"""
@@ -61,12 +55,11 @@ class RequestTest(TestCase):
         response = c.get('/requests/')
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.context['requests'])
-        self.assertIn(
-            '<tr>\n                        <td>'
-            '28/01/2016 13:01</td>\n'
-            '                        <td>GET</td>'
-            '\n                        <td>/</td>'
-            '\n                    </tr>', response.content)
+        self.assertIn('<tr>\n'
+                      '                            <td>28/01/2016 13:01</td>\n'
+                      '                            <td>GET</td>\n'
+                      '                            <td>/</td>\n'
+                      '                        </tr>', response.content)
 
     def test_get_request(self):
         """
@@ -76,6 +69,7 @@ class RequestTest(TestCase):
         req = RequestLog.objects.all().first()
         response = c.get('/api/requests/1/')
         requests = RequestLog.objects.filter(datetime__gt=req.datetime)
+        requests = requests.exclude(path__contains='/api/')
         jsoned_reqs = json.dumps([{
                           'datetime': r.datetime.strftime('%d/%m/%Y %H:%M'),
                           'method': str(r.method),

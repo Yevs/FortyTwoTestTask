@@ -1,30 +1,36 @@
 {% extends "base.html" %}
 {% load staticfiles %}
+{% block title %} Requests {% endblock title %}
 {% block extra_head %}
     <link rel="stylesheet" href="{% static "css/hello/style.css" %}">
     <link rel="stylesheet" href="{% static "css/hello/requests.css" %}">
 {% endblock extra_head %}
 {% block content %}
     {% include "hello/header.html" %}
+    <span id="last-req-id" hidden>{{ last_req_id }}</span>
     <div class="jumbotron">
         <div class="row">
             <div id="separator"></div>
             <header>Requests</header>
-            <div id="new-requests">5 more requests</div>
             <table class="table">
-                <tr id="table-headers">
+                <thead id="table-headers">
                     <td>Time</td>
                     <td>Method</td>
                     <td>Path</td>
-                </tr>
-                {% for request in requests %}
-                    <tr>
-                        <td>{{ request.datetime|date:'d/m/Y H:m' }}</td>
-                        <td>{{ request.method }}</td>
-                        <td>{{ request.path }}</td>
-                    </tr>
-                {% endfor %}
+                </thead>
+                <tbody>
+                    {% for request in requests %}
+                        <tr>
+                            <td>{{ request.datetime|date:'d/m/Y H:m' }}</td>
+                            <td>{{ request.method }}</td>
+                            <td>{{ request.path }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
     </div>
 {% endblock content %}
+{% block extra_scripts %}
+    <script src="{% static "js/hello/requests.js" %}"></script>
+{% endblock extra_scripts %}
