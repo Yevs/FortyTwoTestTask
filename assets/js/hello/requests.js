@@ -1,3 +1,4 @@
+var table_len = $('tbody tr').length; // if there were less than 10 requests on page originally
 var last_req_id = -1;
 var domain = document.location.origin;
 var focused = document.hasFocus();
@@ -46,6 +47,10 @@ function process_requests() {
                 }
             } else {
                 req_queue.forEach(add_req_to_table);
+                table_len += req_queue.length;
+                while (table_len > 10) {
+                    $('tbody tr:last-child').remove();
+                }
                 req_queue = [];
             }
             done_last_update = true;
