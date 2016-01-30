@@ -5,14 +5,6 @@ var focused = document.hasFocus();
 var req_queue = [];
 var done_last_update = true; // in case request will take more than a second
 
-$(window).focus(function() {
-    focused = true;
-    document.title = 'Requests';
-})
-.blur(function() {
-    focused = false;
-});
-
 function get_last_request_id() {
     if (last_req_id == -1) {
         last_req_id = $('#last-req-id')[0].innerHTML;
@@ -31,6 +23,16 @@ function add_req_to_table(req) {
                                  + path + '</tr></td>');
 }
 
+function empty_req_queue() {
+    req_queue.forEach(add_req_to_table);
+    table_len += req_queue.length;
+    while (table_len > 10) {
+        $('tbody tr:last-child').remove();
+        table_len--;
+    }
+    req_queue = [];
+}
+
 function process_requests() {
     if (done_last_update) {
         done_last_update = false;
@@ -46,12 +48,7 @@ function process_requests() {
                     document.title = '(' + req_queue.length + ') Requests';
                 }
             } else {
-                req_queue.forEach(add_req_to_table);
-                table_len += req_queue.length;
-                while (table_len > 10) {
-                    $('tbody tr:last-child').remove();
-                }
-                req_queue = [];
+                empty_req_queue();
             }
             done_last_update = true;
         })
@@ -60,6 +57,17 @@ function process_requests() {
         })
     }
 }
+
+$(window).focus(function() {
+    focused = true;
+    document.title = 'Requests';
+    empty_req_queue();
+})
+.blur(function() {
+    focused = false;
+});
+
+
 
 process_requests();
 setInterval(process_requests, 1000);
