@@ -14,10 +14,9 @@
                     <h5><strong>{{ person.first_name }}</strong></h5>
                     <h5><strong>{{ person.last_name }}</strong></h5>
                     <h5><strong>Date of Birth:</strong> {{ person.birth_date }}</h5>
-                    {% if person.biography%}
-                    <h5><strong>Bio:</strong></h5>
-                    <p id="bio">{{ person.biography }}</p>
-                    {% endif %}
+                    <div class="image">
+                        <img src="{% static "img/default.png" %}" alt="user">
+                    </div>
                 </div>
                 <div class="col-md-6">
                     <h5><strong>Contacts</strong></h5>
@@ -31,6 +30,10 @@
                     {% if person.other_contacts %}
                         <h5><strong>Other:</strong></h5>
                         <p> {{ person.other_contacts }}</p>
+                    {% endif %}
+                    {% if person.biography%}
+                    <h5><strong>Bio:</strong></h5>
+                    <p id="bio">{{ person.biography }}</p>
                     {% endif %}
                 </div>
             </div>

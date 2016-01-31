@@ -1,0 +1,155 @@
+<head>
+    <title>Edit</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>    
+<body>
+    <div class="container">
+        <div class="header clearfix">
+            <nav>
+                <ul class="nav nav-pills pull-right">
+                    <li role="presentation">
+                        <a href="#">Home</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">Requests</a>
+                    </li>
+                </ul>
+            </nav>
+            <h3 class="text-muted">42 Coffee Cups Test Project</h3>
+        </div>
+        <div class="jumbotron">
+            <div class="row">
+                <style>
+                    label {
+                        margin-top: 6px;
+                    }
+
+                    .image {
+                        width: 100%;
+                        margin-top: 10px;
+                    }
+                    
+                    .image img {
+                        max-width: 200px;
+                        max-height: 200px;
+                        display: block;
+                    }
+
+                    .image span {
+                        margin: auto;
+                        margin-bottom: 3px;
+                    }
+
+                    .image .image-group {
+                        padding: 0;
+                        max-width: 200px;
+                        margin: auto;
+                    }
+
+                    textarea {
+                        resize: none;
+                    }
+
+                    .btn-file {
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    .btn-file input[type=file] {
+                        position: absolute;
+                        top: 0;
+                        right: 0;
+                        min-width: 100%;
+                        min-height: 100%;
+                        font-size: 100px;
+                        text-align: right;
+                        filter: alpha(opacity=0);
+                        opacity: 0;
+                        outline: none;
+                        background: white;
+                        cursor: inherit;
+                        display: block;
+                    }
+                </style>
+                <form action="" class="form-horizontal" enctype="multipart/form-data">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="name-input" class="col-sm-5 control-label">Name:</label>
+                            <div class="col-sm-7 control-label">
+                                <input type="text" class="form-control" name="first-name" placeholder="Name" id="name-input">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="surname-input" class="col-sm-5 control-label">Last name:</label>
+                            <div class="col-sm-7 control-label">
+                                <input type="text" class="form-control" name="last-name" placeholder="Last name" id="surname-input">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="bday-input" class="col-sm-5 control-label">Date of Birth:</label>
+                            <div class="col-sm-7 control-label">
+                                <input type="date" class="form-control" name="birthday" max="2016-01-31" id="bday-input">
+                            </div>
+                        </div>
+                        <div class="image">
+                            <div class="image-group">
+                                <span class="btn btn-default btn-file">
+                                    Browse <input type="file">
+                                </span>
+                                <img src="../assets/img/default.png" alt="Uploaded image">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="email-input" class="col-sm-3 control-label">Email:</label>
+                            <div class="col-sm-9 control-label">
+                                <input type="email" class="form-control" name="email" placeholder="user@example.com" id="email-input">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="skype-input" class="col-sm-3 control-label">Skype:</label>
+                            <div class="col-sm-9 control-label">
+                                <input type="text" class="form-control" name="skype" placeholder="Skype" id="skype-input">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="surname-input" class="col-sm-3 control-label">Jabber:</label>
+                            <div class="col-sm-9 control-label">
+                                <input type="text" class="form-control" name="jabber" placeholder="Jabber" id="surname-input">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <label for="bio-input">Other contacts:</label>
+                                <textarea class="form-control" rows="5" name="contacts" placeholder="Other contacts" id="contacts-input"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <label for="contacts-input">Biography:</label>
+                                <textarea class="form-control" rows="5" name="bio" placeholder="Your biography..." id="bio-input"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>                
+    </div>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script>
+        $(document).on('change', '.btn-file :file', function() {
+            var input = $(this),
+                numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+            input.trigger('fileselect', [numFiles, label]);
+        });
+
+        $(document).ready( function() {
+            $('.btn-file :file').on('fileselect', function(e, numFiles, label) {
+                console.log(numFiles);
+                console.log(label);
+            });
+        });
+    </script>
+</body>

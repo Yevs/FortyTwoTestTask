@@ -9,3 +9,14 @@
 .header ul {
     margin-top: 10px;
 }
+
+.image {
+    width: 200px;
+}
+
+.image img {
+    max-width: 200px;
+    max-height: 200px;
+    display: block;
+    margin: auto;
+}
