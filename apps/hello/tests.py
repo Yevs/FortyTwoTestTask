@@ -128,3 +128,27 @@ class RequestTest(TestCase):
         self.client.get('/api/requests/1')
         new_amount = RequestLog.objects.count()
         self.assertEqual(old_amount, new_amount)
+
+
+class EditTest(TestCase):
+
+    fixtures = ['initial_data.json']
+
+    def test_edit_page(self):
+        """
+        Tests whether GET to /edit/ responds with right template"""
+        response = Client().get('/edit/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'hello/form.html')
+
+    def test_form_submit(self):
+        """
+        Tests whether it is possible to submit form via api"""
+
+        c = Client(enforce_csrf_checks=True)
+        c.post('/edit/', {'first_name': 'John',
+                          'last_name': 'Doe',
+                          'birth_date': '1990-01-01',
+                          'email': 'john@doe.com'})
+        p = Person.objects.first()
+        self.assertEqual(p.first_name, u'John')

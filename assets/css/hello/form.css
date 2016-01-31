@@ -1,6 +1,7 @@
 label {
     margin-top: 6px;
 }
+
 .image {
     width: 100%;
     margin-top: 10px;
@@ -11,22 +12,27 @@ label {
     max-height: 200px;
     display: block;
 }
+
 .image span {
     margin: auto;
     margin-bottom: 3px;
 }
+
 .image .image-group {
     padding: 0;
     max-width: 200px;
     margin: auto;
 }
+
 textarea {
     resize: none;
 }
+
 .btn-file {
     position: relative;
     overflow: hidden;
 }
+
 .btn-file input[type=file] {
     position: absolute;
     top: 0;
@@ -41,4 +47,9 @@ textarea {
     background: white;
     cursor: inherit;
     display: block;
+}
+
+#submit {
+    float: right;
+    margin-right: 30px;
 }

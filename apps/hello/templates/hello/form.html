@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 {% block title %}Edit{% endblock title %}
 {% block extra_head %}
     <link rel="stylesheet" href="{% static "css/hello/form.css" %}">
@@ -7,24 +8,25 @@
     {% include "hello/header.html" %}
     <div class="jumbotron">
         <div class="row">
-            <form action="" class="form-horizontal" enctype="multipart/form-data">
+            <form action="/edit" method="post" class="form-horizontal" enctype="multipart/form-data">
+                {% csrf_token %}
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="name-input" class="col-sm-5 control-label">Name:</label>
+                        <label for="{{ form.first_name.id_for_label }}" class="col-sm-5 control-label">Name:</label>
                         <div class="col-sm-7 control-label">
-                            <input type="text" class="form-control" name="first-name" placeholder="Name" id="name-input">
+                            {{ form.first_name }}
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="surname-input" class="col-sm-5 control-label">Last name:</label>
+                        <label for="{{ form.last_name.id_for_label }}" class="col-sm-5 control-label">Last name:</label>
                         <div class="col-sm-7 control-label">
-                            <input type="text" class="form-control" name="last-name" placeholder="Last name" id="surname-input">
+                            {{ form.last_name }}
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="bday-input" class="col-sm-5 control-label">Date of Birth:</label>
+                        <label for="{{ form.birth_date.id_for_label }}" class="col-sm-5 control-label">Date of Birth:</label>
                         <div class="col-sm-7 control-label">
-                            <input type="date" class="form-control" name="birthday" max="2016-01-31" id="bday-input">
+                            {{ form.birth_date }}
                         </div>
                     </div>
                     <div class="image">
@@ -32,41 +34,44 @@
                             <span class="btn btn-default btn-file">
                                 Browse <input type="file">
                             </span>
-                            <img src="../assets/img/default.png" alt="Uploaded image">
+                            <img src="{% static "img/default.png" %}" alt="Uploaded image">
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="email-input" class="col-sm-3 control-label">Email:</label>
+                        <label for="{{ form.email.id_for_label }}" class="col-sm-3 control-label">Email:</label>
                         <div class="col-sm-9 control-label">
-                            <input type="email" class="form-control" name="email" placeholder="user@example.com" id="email-input">
+                            {{ form.email }}
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="skype-input" class="col-sm-3 control-label">Skype:</label>
+                        <label for="{{ form.skype.id_for_label }}" class="col-sm-3 control-label">Skype:</label>
                         <div class="col-sm-9 control-label">
-                            <input type="text" class="form-control" name="skype" placeholder="Skype" id="skype-input">
+                            {{ form.skype }}
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="surname-input" class="col-sm-3 control-label">Jabber:</label>
+                        <label for="{{ form.jabber.id_for_label }}" class="col-sm-3 control-label">Jabber:</label>
                         <div class="col-sm-9 control-label">
-                            <input type="text" class="form-control" name="jabber" placeholder="Jabber" id="surname-input">
+                            {{ form.jabber }}
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-sm-12">
-                            <label for="bio-input">Other contacts:</label>
-                            <textarea class="form-control" rows="5" name="contacts" placeholder="Other contacts" id="contacts-input"></textarea>
+                            <label for="{{ form.biography.id_for_label }}">Other contacts:</label>
+                            {{ form.biography }}
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-sm-12">
-                            <label for="contacts-input">Biography:</label>
-                            <textarea class="form-control" rows="5" name="bio" placeholder="Your biography..." id="bio-input"></textarea>
+                            <label for="{{ form.other_contacts.id_for_label }}">Biography:</label>
+                            {{ form.other_contacts }}
                         </div>
                     </div>
+                </div>
+                <div class="form-group">
+                    <a class="btn btn-primary" id="submit">Submit</a>
                 </div>
             </form>
         </div>

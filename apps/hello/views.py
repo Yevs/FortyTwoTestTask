@@ -1,6 +1,7 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from .models import Person, RequestLog
 from django.http import HttpResponse
+from .forms import PersonForm
 import json
 
 
@@ -40,3 +41,8 @@ def get_requests(request, req_id):
              'path': str(r.path),
              'id': str(r.id)} for r in requests]
     return HttpResponse(json.dumps(data))
+
+
+def edit(request):
+    form = PersonForm()
+    return render_to_response('hello/form.html', {'form': form})
