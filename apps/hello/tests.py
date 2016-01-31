@@ -36,14 +36,13 @@ class IndexTest(TestCase):
 
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['person'],
-                         Person.objects.order_by('id').first())
-        content = response.content.decode('utf-8')
-        self.assertIn('Yevhen', content)
-        self.assertIn('Yevsyuhov', content)
-        self.assertIn('Sept. 16, 1997', content)
-        self.assertIn('yevhen.yevsyuhov', content)
-        self.assertIn('yevs@42cc.co', content)
+        self.assertTemplateUsed(response, 'hello/index.html')
+        self.assertEqual(response.context['person'], Person.objects.all()[0])
+        self.assertIn('Yevhen', response.content)
+        self.assertIn('Yevsyuhov', response.content)
+        self.assertIn('Sept. 16, 1997', response.content)
+        self.assertIn('yevhen.yevsyuhov', response.content)
+        self.assertIn('yevs@42cc.co', response.content)
 
     def test_indexpage_no_persons(self):
         """
@@ -70,12 +69,16 @@ class RequestTest(TestCase):
 
     fixtures = ['request_fixtures.json']
 
+    def setUp(self):
+        self.client = Client()
+        self.REQUESTS_ON_PAGE = 10
+
     def test_middleware(self):
         """
         Tests whether request is getting written to db"""
 
         old_amount = len(RequestLog.objects.all())
-        Client().get('/')
+        self.client.get('/')
         new_amount = len(RequestLog.objects.all())
         self.assertEqual(new_amount-old_amount, 1)
 
@@ -83,9 +86,9 @@ class RequestTest(TestCase):
         """
         Tests whether requests page accessible and if data is there"""
 
-        c = Client()
-        response = c.get('/requests/')
+        response = self.client.get('/requests/')
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'hello/requests.html')
         self.assertIsNotNone(response.context['requests'])
         self.assertIn('<tr>\n'
                       '                            <td>28/01/2016 13:01</td>\n'
@@ -95,16 +98,33 @@ class RequestTest(TestCase):
 
     def test_get_request(self):
         """
-        Tests whethe get_requests return right requests in right order"""
+        Tests whether get_requests return right requests in right order"""
 
-        c = Client()
         req = RequestLog.objects.all().first()
-        response = c.get('/api/requests/1/')
-        requests = RequestLog.objects.filter(datetime__gt=req.datetime)
-        requests = requests.exclude(path__contains='/api/')
+        response = self.client.get('/api/requests/1/')
+        requests = RequestLog.objects.filter(datetime__gt=req.datetime)\
+                                     .order_by('-datetime')
+        requests = requests[:self.REQUESTS_ON_PAGE]
         jsoned_reqs = json.dumps([{
                           'datetime': r.datetime.strftime('%d/%m/%Y %H:%M'),
                           'method': str(r.method),
                           'path': str(r.path),
                           'id': str(r.id)} for r in requests])
         self.assertEqual(jsoned_reqs, response.content)
+
+    def test_requests_amount(self):
+        """
+        Tests whether requests page has only REQUESTS_ON_PAGE requests"""
+
+        response = self.client.get('/requests/')
+        self.assertEqual(len(response.context['requests']),
+                         self.REQUESTS_ON_PAGE)
+
+    def test_api_logging(self):
+        """
+        Tests whether api call are not being logged"""
+
+        old_amount = RequestLog.objects.count()
+        self.client.get('/api/requests/1')
+        new_amount = RequestLog.objects.count()
+        self.assertEqual(old_amount, new_amount)
