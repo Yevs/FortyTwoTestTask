@@ -13,7 +13,6 @@ class Calendar(Input):
         super(Calendar, self).__init__(attrs)
 
 
-
 class PersonForm(ModelForm):
 
     class Meta:
@@ -26,8 +25,8 @@ class PersonForm(ModelForm):
             'last_name': TextInput(attrs={'class': 'form-control',
                                           'placeholder': 'Last name'}),
             'biography': Textarea(attrs={'class': 'form-control',
-                                          'placeholder': 'Your biography...',
-                                          'rows': 5}),
+                                         'placeholder': 'Your biography...',
+                                         'rows': 5}),
             'email': EmailInput(attrs={'class': 'form-control',
                                        'placeholder': 'user@gmail.com'}),
             'skype': TextInput(attrs={'class': 'form-control',
@@ -38,5 +37,5 @@ class PersonForm(ModelForm):
                                               'placeholder': 'Other contacts',
                                               'rows': 5}),
             'birth_date': Calendar(attrs={'class': 'form-control',
-                                          'value': '1990-01-01'})
+                                          'value': '1990-01-01'}),
         }

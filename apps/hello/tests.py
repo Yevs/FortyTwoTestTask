@@ -137,6 +137,7 @@ class EditTest(TestCase):
     def test_edit_page(self):
         """
         Tests whether GET to /edit/ responds with right template"""
+
         response = Client().get('/edit/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'hello/form.html')
@@ -145,10 +146,28 @@ class EditTest(TestCase):
         """
         Tests whether it is possible to submit form via api"""
 
-        c = Client(enforce_csrf_checks=True)
-        c.post('/edit/', {'first_name': 'John',
-                          'last_name': 'Doe',
-                          'birth_date': '1990-01-01',
-                          'email': 'john@doe.com'})
+        resp = Client().post('/edit/', {'first_name': 'John',
+                                        'last_name': 'Doe',
+                                        'birth_date': '1956-01-01',
+                                        'email': 'john@doe.com'})
         p = Person.objects.first()
+        self.assertEqual(resp.status_code, 302)
         self.assertEqual(p.first_name, u'John')
+        self.assertEqual(p.birth_date.strftime('%Y-%m-%d'), '1956-01-01')
+
+    def test_api(self):
+        """
+        Tests if api function works"""
+        data = json.dumps({'first_name': 'William',
+                           'last_name': 'Doe',
+                           'biography': '',
+                           'email': 'w@doe.com',
+                           'skype': '',
+                           'jabber': '',
+                           'other_contacts': '',
+                           'birth_date': '1999-01-01'})
+        resp = Client().post('/api/edit/', {'updates': data})
+        result = json.loads(resp.content)
+        self.assertEqual(result['status'], 'ok')
+        p = Person.objects.first()
+        self.assertEqual(p.first_name, u'William')

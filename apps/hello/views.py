@@ -1,6 +1,7 @@
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.http import HttpResponse, Http404
+from django.core.urlresolvers import reverse
 from .models import Person, RequestLog
-from django.http import HttpResponse
 from .forms import PersonForm
 import json
 
@@ -44,5 +45,44 @@ def get_requests(request, req_id):
 
 
 def edit(request):
-    form = PersonForm()
-    return render_to_response('hello/form.html', {'form': form})
+    """
+    Returns edit page on GET
+    Validates data and saves changes on POST"""
+
+    if Person.objects.count() == 0:
+        raise Http404
+    if request.method == 'GET':
+        form = PersonForm(instance=Person.objects.first())
+        return render_to_response('hello/form.html', {'form': form})
+    elif request.method == 'POST':
+        form = PersonForm(request.POST, instance=Person.objects.first())
+        if form.is_valid():
+            form.save()
+        return redirect(reverse('hello:home'))
+    else:
+        raise Http404
+
+
+def edit_api(request):
+    """
+    Processes json to update Person object"""
+
+    if request.method == 'POST':
+        data = json.loads(request.POST['updates'])
+        form = PersonForm({'first_name': data['first_name'],
+                           'last_name': data['last_name'],
+                           'biography': data['biography'],
+                           'email': data['email'],
+                           'skype': data['skype'],
+                           'jabber': data['jabber'],
+                           'other_contacts': data['other_contacts'],
+                           'birth_date': data['birth_date']},
+                          instance=Person.objects.first())
+        if form.is_valid():
+            form.save()
+            return HttpResponse('{"status": "ok"}')
+        else:
+            return HttpResponse(json.dumps({'status': 'error',
+                                            'errors': form.errors}))
+    else:
+        raise Http404
