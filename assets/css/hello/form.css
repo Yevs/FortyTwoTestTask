@@ -2,23 +2,23 @@ label {
     margin-top: 6px;
 }
 
-.image {
+form .image {
     width: 100%;
     margin-top: 10px;
 }
 
-.image img {
+form .image img {
     max-width: 200px;
     max-height: 200px;
     display: block;
 }
 
-.image span {
+form .image span {
     margin: auto;
     margin-bottom: 3px;
 }
 
-.image .image-group {
+form .image .image-group {
     padding: 0;
     max-width: 200px;
     margin: auto;

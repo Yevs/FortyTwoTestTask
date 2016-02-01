@@ -4,6 +4,7 @@ from django.test import Client
 from hello.models import Person, RequestLog
 from datetime import datetime
 import json
+import os
 
 
 class PersonTest(TestCase):
@@ -166,8 +167,12 @@ class EditTest(TestCase):
                 'jabber': '',
                 'other_contacts': '',
                 'birth_date': '1999-01-01'}
-        resp = Client().post('/api/edit/', data)
-        result = json.loads(resp.content)
-        self.assertEqual(result['status'], 'ok')
-        p = Person.objects.first()
-        self.assertEqual(p.first_name, u'William')
+        with open('assets/img/default.png') as img:
+            data['avatar'] = img
+            resp = Client().post('/api/edit/', data)
+            result = json.loads(resp.content)
+            self.assertEqual(result['status'], 'ok')
+            p = Person.objects.first()
+            self.assertEqual(p.first_name, u'William')
+            self.assertNotEqual(p.avatar, 'avatars/default.png')
+            os.remove('uploads/' + str(p.avatar))

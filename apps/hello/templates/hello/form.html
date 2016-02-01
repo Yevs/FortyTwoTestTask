@@ -50,9 +50,10 @@
                     <div class="image">
                         <div class="image-group">
                             <span class="btn btn-default btn-file">
-                                Browse <input type="file">
+                                Browse <input type="file" name="avatar">
                             </span>
-                            <img src="{% static "img/default.png" %}" alt="Uploaded image">
+                            <span id="file-name"></span>
+                            <img id="avatar" src="{{MEDIA_URL}}{{form.instance.avatar.url}}" alt="Uploaded image">
                         </div>
                     </div>
                 </div>
@@ -128,20 +129,7 @@
 {% block extra_scripts %}
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     {% include "hello/csrf_setup.html" %}
+    <script src="http://malsup.github.io/min/jquery.form.min.js"></script>
     <script src="{% static "js/hello/form.js" %}"></script>
-    <script>
-        $(document).on('change', '.btn-file :file', function() {
-            var input = $(this),
-                numFiles = input.get(0).files ? input.get(0).files.length : 1,
-                label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-            input.trigger('fileselect', [numFiles, label]);
-        });
-
-        $(document).ready( function() {
-            $('.btn-file :file').on('fileselect', function(e, numFiles, label) {
-                console.log(numFiles);
-                console.log(label);
-            });
-        });
     </script>
 {% endblock extra_scripts %}

@@ -2,6 +2,10 @@
 {% load staticfiles %}
 {% block title %} Home {% endblock title %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static "css/hello/form.css" %}">
+{% endblock extra_head %}
+
 {% block content %}
     {% include "hello/header.html" %}
     <div class="jumbotron">
@@ -12,7 +16,7 @@
                     <h5><strong>{{ person.last_name }}</strong></h5>
                     <h5><strong>Date of Birth:</strong> {{ person.birth_date }}</h5>
                     <div class="image">
-                        <img src="{% static "img/default.png" %}" alt="user">
+                        <img src="{{MEDIA_URL}}{{ person.avatar.url }}" alt="user">
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -39,3 +43,11 @@
         {% endif %}
     </div>
 {% endblock content %}
+
+{% block extra_scripts %}
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    {% include "hello/csrf_setup.html" %}
+    <script src="http://malsup.github.io/min/jquery.form.min.js"></script>
+    <script src="{% static "js/hello/index.js" %}"></script>
+    <script src="{% static "js/hello/form.js" %}"></script>
+{% endblock extra_scripts %}

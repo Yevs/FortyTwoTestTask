@@ -70,8 +70,8 @@ def edit_api(request):
     if Person.objects.count() == 0:
         raise Http404
     if request.method == 'POST':
-        data = request.POST
-        form = PersonForm(data,
+        print(request.POST, request.FILES);
+        form = PersonForm(data=request.POST, files=request.FILES,
                           instance=Person.objects.first())
         if form.is_valid():
             form.save()

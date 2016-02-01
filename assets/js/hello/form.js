@@ -35,31 +35,68 @@ function clearErrors() {
     $('span.help-block').removeClass('has-error');
 }
 
-$(document).ready(function() {
+function initFormSubmition(onSuccess) {
     button = $('#submit');
     var form = $('#edit-form');
+    console.log(onSuccess);
     $('#submit').click(function() {
         if (submitted) {
+            
             submitted = false;
             clearErrors();
-            var jsoned_form = {}
-            form.serializeArray().forEach(function(field) {
-                jsoned_form[field['name']] = field['value']
-            });
             var url = domain + '/api/edit/';
             startAnimation();
-            $.post(url, jsoned_form, function(data) {
-                response = JSON.parse(data);
-                if (response['status'] == 'error') {
-                    parseErrors(response['errors']);
+
+            form.ajaxSubmit({
+
+                url: url,
+
+                type: 'POST',
+                
+                dataType: 'json',
+
+                success: function(response) {
+                    if (response['status'] == 'error') {
+                        parseErrors(response['errors']);
+                    } else if (response['status'] == 'ok') {
+                        onSuccess();
+                    }
+                    stopAnimation();
+                    submitted = true;
+                },
+
+                error: function(data) {
+                    stopAnimation();
+                    submitted = true;
                 }
-                stopAnimation();
-                submitted = true;
-            }).fail(function(data) {
-                console.log(data);
-                stopAnimation();
-                submitted = true;
             });
         }
+    });
+}
+
+function initFileUploading() {
+    $('.btn-file :file').on('fileselect', function(e, numFiles, label, files) {
+        $('#file-name').html(label);
+        if (files && files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#avatar').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(files[0]);
+        }            
+    });
+}
+
+$(document).on('change', '.btn-file :file', function() {
+    var input = $(this),
+        numFiles = input.get(0).files ? input.get(0).files.length : 1,
+        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+    input.trigger('fileselect', [numFiles, label, input[0].files]);
+});
+
+$(document).ready(function() {
+    initFileUploading();
+    initFormSubmition(function() {
+        window.location = domain;
     });
 });
