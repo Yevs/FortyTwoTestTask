@@ -158,15 +158,15 @@ class EditTest(TestCase):
     def test_api(self):
         """
         Tests if api function works"""
-        data = json.dumps({'first_name': 'William',
-                           'last_name': 'Doe',
-                           'biography': '',
-                           'email': 'w@doe.com',
-                           'skype': '',
-                           'jabber': '',
-                           'other_contacts': '',
-                           'birth_date': '1999-01-01'})
-        resp = Client().post('/api/edit/', {'updates': data})
+        data = {'first_name': 'William',
+                'last_name': 'Doe',
+                'biography': '',
+                'email': 'w@doe.com',
+                'skype': '',
+                'jabber': '',
+                'other_contacts': '',
+                'birth_date': '1999-01-01'}
+        resp = Client().post('/api/edit/', data)
         result = json.loads(resp.content)
         self.assertEqual(result['status'], 'ok')
         p = Person.objects.first()

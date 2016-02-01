@@ -67,16 +67,11 @@ def edit_api(request):
     """
     Processes json to update Person object"""
 
+    if Person.objects.count() == 0:
+        raise Http404
     if request.method == 'POST':
-        data = json.loads(request.POST['updates'])
-        form = PersonForm({'first_name': data['first_name'],
-                           'last_name': data['last_name'],
-                           'biography': data['biography'],
-                           'email': data['email'],
-                           'skype': data['skype'],
-                           'jabber': data['jabber'],
-                           'other_contacts': data['other_contacts'],
-                           'birth_date': data['birth_date']},
+        data = request.POST
+        form = PersonForm(data,
                           instance=Person.objects.first())
         if form.is_valid():
             form.save()
