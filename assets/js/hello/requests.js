@@ -28,7 +28,12 @@ function add_req_to_table(req) {
     var time = new Date(Date.parse(req['fields']['datetime'])),
         path = req['fields']['path'],
         method = req['fields']['method'];
-    var time_str = time.toLocaleFormat('%d/%m/%Y %H:%M');
+    var year = time.getUTCFullYear(),
+        month = String('0' + time.getUTCMonth()).slice(-2),
+        day = String('0' + time.getUTCDate()).slice(-2),
+        hours = String('0' + time.getUTCHours()).slice(-2),
+        mins = String('0' + time.getUTCMinutes()).slice(-2);
+    var time_str = day+'/'+month+'/'+year+' '+hours+':'+mins;
     $('tbody > tr:first').before('<tr><td>' + time_str + '</td><td>'
                                  + method + '</td><td>' 
                                  + path + '</tr></td>');
