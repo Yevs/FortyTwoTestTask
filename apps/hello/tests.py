@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.test import Client
 from django.core import serializers
 from hello.models import Person, RequestLog
+from datetime import datetime
 
 
 class PersonTest(TestCase):
