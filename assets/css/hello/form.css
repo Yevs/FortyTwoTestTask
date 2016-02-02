@@ -1,0 +1,60 @@
+label {
+    margin-top: 6px;
+}
+
+form .image {
+    width: 100%;
+    margin-top: 10px;
+}
+
+form .image img {
+    max-width: 200px;
+    max-height: 200px;
+    display: block;
+}
+
+form .image span {
+    margin: auto;
+    margin-bottom: 3px;
+}
+
+form .image .image-group {
+    padding: 0;
+    max-width: 200px;
+    margin: auto;
+}
+
+textarea {
+    resize: none;
+}
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+#submit {
+    float: right;
+    margin-right: 30px;
+}
+
+label.col-sm-3 {
+    padding-right: 0;
+    padding-top: 5px !important;
+}

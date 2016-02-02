@@ -4,6 +4,8 @@ from django.test import Client
 from django.core import serializers
 from hello.models import Person, RequestLog
 from datetime import datetime
+import json
+import os
 
 
 class PersonTest(TestCase):
@@ -124,3 +126,70 @@ class RequestTest(TestCase):
         self.client.get('/api/requests/1')
         new_amount = RequestLog.objects.count()
         self.assertEqual(old_amount, new_amount)
+
+
+class EditTest(TestCase):
+
+    fixtures = ['initial_data.json']
+
+    def test_edit_page(self):
+        """
+        Tests whether GET to /edit/ responds with right template"""
+
+        c = Client()
+        response = c.get('/edit/')
+        self.assertEqual(response.status_code, 302)
+
+        c.login(username='user', password='user')
+        response = c.get('/edit/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'hello/form.html')
+
+    def test_form_submit(self):
+        """
+        Tests whether it is possible to submit form via api"""
+
+        data = {'first_name': 'John',
+                'last_name': 'Doe',
+                'birth_date': '1956-01-01',
+                'email': 'john@doe.com'}
+
+        c = Client()
+        resp = c.post('/edit/', data)
+        self.assertEqual(resp.status_code, 302)
+
+        c.login(username='user', password='user')
+        resp = c.post('/edit/', data)
+        p = Person.objects.first()
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(p.first_name, u'John')
+        self.assertEqual(p.birth_date.strftime('%Y-%m-%d'), '1956-01-01')
+
+    def test_api(self):
+        """
+        Tests if api function works"""
+
+        data = {'first_name': 'William',
+                'last_name': 'Doe',
+                'biography': '',
+                'email': 'w@doe.com',
+                'skype': '',
+                'jabber': '',
+                'other_contacts': '',
+                'birth_date': '1999-01-01'}
+
+        with open('uploads/avatars/default.png') as img:
+
+            c = Client()
+            resp = c.post('/api/edit/', data)
+            self.assertEqual(resp.status_code, 302)
+
+            data['avatar'] = img
+            c.login(username='user', password='user')
+            resp = c.post('/api/edit/', data)
+            result = json.loads(resp.content)
+            self.assertEqual(result['status'], 'ok')
+            p = Person.objects.first()
+            self.assertEqual(p.first_name, u'William')
+            self.assertNotEqual(p.avatar, 'avatars/default.png')
+            os.remove('uploads/' + str(p.avatar))
