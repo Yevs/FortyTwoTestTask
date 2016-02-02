@@ -1,5 +1,4 @@
 from .models import RequestLog
-from django.utils import timezone
 
 
 class RequestLoggerMiddleware(object):
@@ -8,6 +7,5 @@ class RequestLoggerMiddleware(object):
         if '/api/' not in request.path and\
            '/static/' not in request.path and\
            'favicon.ico' not in request.path:
-            RequestLog(datetime=timezone.now(),
-                       method=request.method, path=request.path).save()
+            RequestLog(method=request.method, path=request.path).save()
         return None
