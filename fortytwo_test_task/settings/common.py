@@ -31,6 +31,8 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+REQUESTS_ON_PAGE = 10
+
 
 # Application definition
 

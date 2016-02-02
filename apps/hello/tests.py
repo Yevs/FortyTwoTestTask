@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.test import Client
+from django.core import serializers
 from hello.models import Person, RequestLog
-import json
 
 
 class IndexTest(TestCase):
@@ -75,11 +75,7 @@ class RequestTest(TestCase):
         requests = RequestLog.objects.filter(datetime__gt=req.datetime)\
                                      .order_by('-datetime')
         requests = requests[:self.REQUESTS_ON_PAGE]
-        jsoned_reqs = json.dumps([{
-                          'datetime': r.datetime.strftime('%d/%m/%Y %H:%M'),
-                          'method': str(r.method),
-                          'path': str(r.path),
-                          'id': str(r.id)} for r in requests])
+        jsoned_reqs = serializers.serialize('json', requests)
         self.assertEqual(jsoned_reqs, response.content)
 
     def test_requests_amount(self):

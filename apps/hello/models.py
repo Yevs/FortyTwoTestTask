@@ -29,7 +29,7 @@ class Person(models.Model):
 
 
 class RequestLog(models.Model):
-    datetime = models.DateTimeField(blank=False)
+    datetime = models.DateTimeField(blank=False, auto_now_add=True)
     method = models.CharField(blank=False, max_length=40)
     path = models.CharField(blank=False, max_length=40)
 

@@ -1,10 +1,8 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from .models import Person, RequestLog
 from django.http import HttpResponse
-import json
-
-
-REQUESTS_ON_PAGE = 10
+from django.core import serializers
+from django.conf import settings
 
 
 def home(request):
@@ -20,7 +18,7 @@ def requests(request):
     Returns page which displays list of requsts"""
 
     requests = RequestLog.objects.all()\
-                         .order_by('-datetime')[:REQUESTS_ON_PAGE]
+                         .order_by('-datetime')[:settings.REQUESTS_ON_PAGE]
     last_req_id = requests[0].id
     return render_to_response('hello/requests.html',
                               {'requests': requests,
@@ -34,9 +32,6 @@ def get_requests(request, req_id):
 
     req = get_object_or_404(RequestLog, pk=req_id)
     requests = RequestLog.objects.filter(datetime__gt=req.datetime)\
-        .order_by('-datetime')[:REQUESTS_ON_PAGE]
-    data = [{'datetime': r.datetime.strftime('%d/%m/%Y %H:%M'),
-             'method': str(r.method),
-             'path': str(r.path),
-             'id': str(r.id)} for r in requests]
-    return HttpResponse(json.dumps(data))
+        .order_by('-datetime')[:settings.REQUESTS_ON_PAGE]
+    data = serializers.serialize('json', requests)
+    return HttpResponse(data)
