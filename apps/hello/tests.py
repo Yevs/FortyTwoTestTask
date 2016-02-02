@@ -139,7 +139,12 @@ class EditTest(TestCase):
         """
         Tests whether GET to /edit/ responds with right template"""
 
-        response = Client().get('/edit/')
+        c = Client()
+        response = c.get('/edit/')
+        self.assertEqual(response.status_code, 302)
+
+        c.login(username='user', password='user')
+        response = c.get('/edit/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'hello/form.html')
 
@@ -147,10 +152,17 @@ class EditTest(TestCase):
         """
         Tests whether it is possible to submit form via api"""
 
-        resp = Client().post('/edit/', {'first_name': 'John',
-                                        'last_name': 'Doe',
-                                        'birth_date': '1956-01-01',
-                                        'email': 'john@doe.com'})
+        data = {'first_name': 'John',
+                'last_name': 'Doe',
+                'birth_date': '1956-01-01',
+                'email': 'john@doe.com'}
+
+        c = Client()
+        resp = c.post('/edit/', data)
+        self.assertEqual(resp.status_code, 302)
+
+        c.login(username='user', password='user')
+        resp = c.post('/edit/', data)
         p = Person.objects.first()
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(p.first_name, u'John')
@@ -167,9 +179,15 @@ class EditTest(TestCase):
                 'jabber': '',
                 'other_contacts': '',
                 'birth_date': '1999-01-01'}
-        with open('assets/img/default.png') as img:
+        with open('uploads/avatars/default.png') as img:
+
+            c = Client()
+            resp = c.post('/api/edit/', data)
+            self.assertEqual(resp.status_code, 302)
+
             data['avatar'] = img
-            resp = Client().post('/api/edit/', data)
+            c.login(username='user', password='user')
+            resp = c.post('/api/edit/', data)
             result = json.loads(resp.content)
             self.assertEqual(result['status'], 'ok')
             p = Person.objects.first()

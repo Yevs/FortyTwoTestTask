@@ -4,12 +4,23 @@
             <li role="presentation">
                 <a href="/">Home</a>
             </li>
-            <li role="presentation">
-                <a href="#" id="edit">Edit</a>
-            </li>
+            {% if user.is_authenticated %}
+                <li role="presentation">
+                    <a href="#" id="edit">Edit</a>
+                </li>
+            {% else %}
+                <li role="presentation">
+                    <a href="/login" id="login">Login</a>
+                </li>
+            {% endif %}
             <li role="presentation">
                 <a href="/requests">Requests</a>
             </li>
+            {% if user.is_authenticated %}
+                <li role="presentation">
+                    <a href="/logout">Logout</a>
+                </li>
+            {% endif %}
         </ul>
     </nav>
     <h3 class="text-muted">42 Coffee Cups Test Project</h3>

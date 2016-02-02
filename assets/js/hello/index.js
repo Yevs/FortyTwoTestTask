@@ -12,7 +12,7 @@ $('#edit').click(function() {
                 var new_elems = html.find('.jumbotron').children();
                 $('.jumbotron').append(new_elems)
             });
-        initFileUploading();
         });
+        initFileUploading();
     }); 
 });

@@ -35,5 +35,27 @@
          "email":"admin@admin.com",
          "date_joined":"2016-01-28T07:49:59.936Z"
       }
+   },
+   {  
+      "pk":2,
+      "model":"auth.user",
+      "fields":{  
+         "username":"user",
+         "first_name":"",
+         "last_name":"",
+         "is_active":true,
+         "is_superuser":false,
+         "is_staff":false,
+         "last_login":"2016-02-02T09:06:57Z",
+         "groups":[  
+
+         ],
+         "user_permissions":[  
+
+         ],
+         "password":"pbkdf2_sha256$12000$99riN8PA2TKO$zJq988sHq+7uXxqQq83Qq36NFJGgFK/lW3vuwh0sL3A=",
+         "email":"",
+         "date_joined":"2016-02-02T09:06:57Z"
+      }
    }
 ]
