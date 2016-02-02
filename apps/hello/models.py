@@ -24,6 +24,10 @@ class Person(models.Model):
                                default='avatars/default.png')
 
     def save(self, *args, **kwargs):
+        """
+        Delete old avatar if exists.
+        And resize new avatar to 200x200"""
+        
         try:
             this = Person.objects.get(id=self.id)
             if this.avatar != self.avatar and\

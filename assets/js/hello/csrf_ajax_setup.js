@@ -1,4 +1,7 @@
-//lets us make post requests with ajax
+/* Initially ajax requests would fail
+   due to csrf validation. Need to include
+   this code in order fo ajax to work*/
+   
 var csrftoken = $.cookie('csrftoken');
 
 function csrfSafeMethod(method) {

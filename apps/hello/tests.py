@@ -171,6 +171,7 @@ class EditTest(TestCase):
     def test_api(self):
         """
         Tests if api function works"""
+
         data = {'first_name': 'William',
                 'last_name': 'Doe',
                 'biography': '',
@@ -179,6 +180,7 @@ class EditTest(TestCase):
                 'jabber': '',
                 'other_contacts': '',
                 'birth_date': '1999-01-01'}
+                
         with open('uploads/avatars/default.png') as img:
 
             c = Client()

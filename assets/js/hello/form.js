@@ -1,9 +1,19 @@
-var domain = document.location.origin;
-var animation, animation_slide;
+var domain = document.location.origin;  // page domain url
+
+// vars for animating when preventing user to post form 
+// when the previous form has not been resolved yet
+// See: startAnimation
+var animation, animation_slide;   
+
 var button;
 var submitted = true;
 
 function startAnimation() {
+    /*
+    Called when user posts a form.
+    Transforms submit button into button with animation:
+    Submitting. -> Submitting.. -> Submitting...*/
+
     button.removeClass('btn-primary');
     animation_slide = 0;
     animation = setInterval(function() {
@@ -15,6 +25,10 @@ function startAnimation() {
 }
 
 function stopAnimation() {
+    /*
+    Called when user form post has been resolved.
+    Stops animation of the submit button*/
+
     button.addClass('btn-primary');
     clearInterval(animation);
     button.html('Submit');
@@ -22,6 +36,10 @@ function stopAnimation() {
 }
 
 function parseErrors(errors) {
+    /*
+    Given errors as json from server response,
+    lists them on the form*/
+
     var prefix = '#help_';
     for (var field in errors) {
         var msg = errors[field][0];
@@ -31,11 +49,23 @@ function parseErrors(errors) {
 }
 
 function clearErrors() {
+    /*
+    Clears errors help boxes.
+    Called when user resubmits a form after fail*/
+
     $('span.help-block').html('');
     $('span.help-block').removeClass('has-error');
 }
 
 function initFormSubmition(onSuccess) {
+    /*
+    Gets a form and assigns an onclick event handler
+    to a submit button. Makes sure that form can be
+    submitted only once before it gets processed from
+    a server by grabbing submitted condition variable.
+    A success callback of form submition is given
+    by onSuccess argument*/
+
     button = $('#submit');
     var form = $('#edit-form');
     $('#submit').click(function() {
@@ -74,6 +104,10 @@ function initFormSubmition(onSuccess) {
 }
 
 function initFileUploading() {
+    /*
+    Creates basic event and initiallization
+    for a "custom" input[type="file"] control*/
+
     $(document).on('change', '.btn-file :file', function() {
         var input = $(this),
             numFiles = input.get(0).files ? input.get(0).files.length : 1,
