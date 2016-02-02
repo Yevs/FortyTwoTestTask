@@ -27,7 +27,7 @@ class Person(models.Model):
         """
         Delete old avatar if exists.
         And resize new avatar to 200x200"""
-        
+
         try:
             this = Person.objects.get(id=self.id)
             if this.avatar != self.avatar and\

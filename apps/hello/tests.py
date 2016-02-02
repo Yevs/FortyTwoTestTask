@@ -180,7 +180,7 @@ class EditTest(TestCase):
                 'jabber': '',
                 'other_contacts': '',
                 'birth_date': '1999-01-01'}
-                
+
         with open('uploads/avatars/default.png') as img:
 
             c = Client()
