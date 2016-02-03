@@ -2,7 +2,9 @@
 from django.test import TestCase
 from django.test import Client
 from django.core import serializers
+from django.core.management import call_command
 from django.template import Context, Template
+from django.utils.six import StringIO
 
 import json
 import os
@@ -225,3 +227,37 @@ class TagTest(TestCase):
         rendered = self.render_template(self.template, {'obj': p})
         expected = '<a href="/admin/hello/person/1/">Edit (admin)</a>'
         self.assertIn(expected, rendered)
+
+
+class TestCommand(TestCase):
+
+    fixtures = ['initial_data.json', 'request_fixtures.json']
+
+    def test_command_option(self):
+        """
+        Tests whether command 'models' works right with '--all' option"""
+
+        args = []
+        options = {'app': True}
+        out = StringIO()
+        call_command('models', *args, stdout=out, **options)
+        expected = 'Person (count: 1)\nRequestLog (count: 10)\n'
+        self.assertEqual(expected, out.getvalue())
+
+    def test_command_no_option(self):
+        """
+        Tests whether command 'models' works right"""
+        args = []
+        options = {'app': False}
+        out = StringIO()
+        call_command('models', *args, stdout=out, **options)
+        expected = 'Session (count: 0)\n'\
+                   'LogEntry (count: 0)\n'\
+                   'Permission (count: 27)\n'\
+                   'Group (count: 0)\n'\
+                   'User (count: 2)\n'\
+                   'ContentType (count: 9)\n'\
+                   'Person (count: 1)\n'\
+                   'RequestLog (count: 10)\n'\
+                   'MigrationHistory (count: 0)\n'
+        self.assertEqual(expected, out.getvalue())
