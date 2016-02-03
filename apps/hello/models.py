@@ -57,3 +57,25 @@ class RequestLog(models.Model):
         return \
             self.datetime.strftime('%d/%b/%Y %H:%M') +\
             ' ' + self.method + ' ' + self.path
+
+
+class ModelChange(models.Model):
+
+    CHANGE_TYPES = (
+        ('add', 'Add'),
+        ('edit', 'Edit'),
+        ('delete', 'Delete'),
+        )
+
+    type = models.CharField(max_length=10, choices=CHANGE_TYPES, blank=False)
+    model = models.CharField(max_length=50, blank=False)
+    # id of model instance that was changed(add, edit, delete)
+    instance_pk = models.IntegerField(blank=False)
+    timestamp = models.DateTimeField(blank=False, auto_now_add=True)
+
+    def __unicode__(self):
+        date_string = self.timestamp.strftime('%d/%m/%Y %H:%M')
+        return '{} {} (pk = {}) {}'.format(self.type,
+                                           self.model,
+                                           self.instance_pk,
+                                           date_string)

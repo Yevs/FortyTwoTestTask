@@ -9,7 +9,7 @@ from django.utils.six import StringIO
 import json
 import os
 
-from hello.models import Person, RequestLog
+from hello.models import Person, RequestLog, ModelChange
 from datetime import datetime
 
 
@@ -74,7 +74,7 @@ class IndexTest(TestCase):
 
 class RequestTest(TestCase):
 
-    fixtures = ['request_fixtures.json']
+    fixtures = ['initial_data.json']
 
     def setUp(self):
         self.client = Client()
@@ -229,9 +229,9 @@ class TagTest(TestCase):
         self.assertIn(expected, rendered)
 
 
-class TestCommand(TestCase):
+class CommandTest(TestCase):
 
-    fixtures = ['initial_data.json', 'request_fixtures.json']
+    fixtures = ['initial_data.json']
 
     def get_err_output(self, output):
         return '\n'.join(
@@ -245,7 +245,9 @@ class TestCommand(TestCase):
         options = {'app': True}
         out, err = StringIO(), StringIO()
         call_command('models', *args, stdout=out, stderr=err, **options)
-        expected = 'Person (count: 1)\nRequestLog (count: 10)\n'
+        expected = 'Person (count: 1)\n'\
+                   'RequestLog (count: 10)\n'\
+                   'ModelChange (count: 22)\n'
         err_expected = self.get_err_output(expected)
         self.assertEqual(expected, out.getvalue())
         self.assertEqual(err_expected, err.getvalue())
@@ -259,13 +261,91 @@ class TestCommand(TestCase):
         call_command('models', *args, stdout=out, stderr=err, **options)
         expected = 'Session (count: 0)\n'\
                    'LogEntry (count: 0)\n'\
-                   'Permission (count: 27)\n'\
+                   'Permission (count: 30)\n'\
                    'Group (count: 0)\n'\
                    'User (count: 2)\n'\
-                   'ContentType (count: 9)\n'\
+                   'ContentType (count: 10)\n'\
                    'Person (count: 1)\n'\
                    'RequestLog (count: 10)\n'\
+                   'ModelChange (count: 22)\n'\
                    'MigrationHistory (count: 0)\n'
         err_expected = self.get_err_output(expected)
         self.assertEqual(expected, out.getvalue())
         self.assertEqual(err_expected, err.getvalue())
+
+
+class SignalTest(TestCase):
+
+    fixtures = ['initial_data.json']
+
+    def test_person_add(self):
+        """
+        Tests if adding a Person would create and 'add' db entry"""
+
+        p = Person(first_name='John',
+                   last_name='Doe',
+                   email='john@doe.com',
+                   birth_date=datetime.now())
+        p.save()
+        logs = ModelChange.objects.filter(instance_pk=p.pk)
+        self.assertTrue(logs.exists())
+        self.assertEqual(logs.first().type, 'add')
+
+    def test_person_edit(self):
+        """
+        Tests if changing a Person would create an 'edit' db entry"""
+
+        p = Person.objects.first()
+        p.first_name = 'John'
+        p.save()
+        logs = ModelChange.objects.filter(model='Person',
+                                          instance_pk=p.pk)
+        self.assertTrue(logs.exists())
+        self.assertEqual(logs.last().type, 'edit')
+
+    def test_person_delete(self):
+        """
+        Tests if deleting a Person would create a 'delete' db entry"""
+
+        p = Person.objects.first()
+        pk = p.pk
+        p.delete()
+        logs = ModelChange.objects.filter(model='Person',
+                                          instance_pk=pk)
+        self.assertTrue(logs.exists())
+        self.assertEqual(logs.last().type, 'delete')
+
+    def test_request_log_add(self):
+        """
+        Tests if adding a RequestLog would create and 'add' db entry"""
+
+        r = RequestLog(method='GET', path='/')
+        r.save()
+        logs = ModelChange.objects.filter(model='RequestLog',
+                                          instance_pk=r.pk)
+        self.assertTrue(logs.exists())
+        self.assertEqual(logs.first().type, 'add')
+
+    def test_request_log_edit(self):
+        """
+        Tests if changing a RequestLog would create and 'edit' db entry"""
+
+        r = RequestLog.objects.first()
+        r.path = '/edit/'
+        r.save()
+        logs = ModelChange.objects.filter(model='RequestLog',
+                                          instance_pk=r.pk)
+        self.assertTrue(logs.exists())
+        self.assertEqual(logs.last().type, 'edit')
+
+    def test_request_log_delete(self):
+        """
+        Tests if deleting a RequestLog would create a 'delete' db entry"""
+
+        r = RequestLog.objects.first()
+        pk = r.pk
+        r.delete()
+        logs = ModelChange.objects.filter(model='RequestLog',
+                                          instance_pk=pk)
+        self.assertTrue(logs.exists())
+        self.assertEqual(logs.last().type, 'delete')
