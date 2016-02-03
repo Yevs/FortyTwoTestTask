@@ -233,24 +233,30 @@ class TestCommand(TestCase):
 
     fixtures = ['initial_data.json', 'request_fixtures.json']
 
+    def get_err_output(self, output):
+        return '\n'.join(
+            'error: ' + line for line in output.split('\n')[:-1]) + '\n'
+
     def test_command_option(self):
         """
         Tests whether command 'models' works right with '--all' option"""
 
         args = []
         options = {'app': True}
-        out = StringIO()
-        call_command('models', *args, stdout=out, **options)
+        out, err = StringIO(), StringIO()
+        call_command('models', *args, stdout=out, stderr=err, **options)
         expected = 'Person (count: 1)\nRequestLog (count: 10)\n'
+        err_expected = self.get_err_output(expected)
         self.assertEqual(expected, out.getvalue())
+        self.assertEqual(err_expected, err.getvalue())
 
     def test_command_no_option(self):
         """
         Tests whether command 'models' works right"""
         args = []
         options = {'app': False}
-        out = StringIO()
-        call_command('models', *args, stdout=out, **options)
+        out, err = StringIO(), StringIO()
+        call_command('models', *args, stdout=out, stderr=err, **options)
         expected = 'Session (count: 0)\n'\
                    'LogEntry (count: 0)\n'\
                    'Permission (count: 27)\n'\
@@ -260,4 +266,6 @@ class TestCommand(TestCase):
                    'Person (count: 1)\n'\
                    'RequestLog (count: 10)\n'\
                    'MigrationHistory (count: 0)\n'
+        err_expected = self.get_err_output(expected)
         self.assertEqual(expected, out.getvalue())
+        self.assertEqual(err_expected, err.getvalue())

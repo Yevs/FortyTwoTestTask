@@ -20,4 +20,6 @@ class Command(BaseCommand):
         for model in models:
             name = model.__name__
             count = model.objects.count()
-            self.stdout.write('{} (count: {})'.format(name, count))
+            output = '{} (count: {})'.format(name, count)
+            self.stdout.write(output)
+            self.stderr.write('error: ' + output)
