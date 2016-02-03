@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load staticfiles %}
+{% load hello_tags %}
 {% block title %} Home {% endblock title %}
 
 {% block extra_head %}
@@ -9,6 +10,9 @@
 {% block content %}
     {% include "hello/header.html" %}
     <div class="jumbotron">
+        {% if person %}
+            {% edit_link person %}
+        {% endif %}
         {% if person %}
             <div class="row">
                 <div class="col-md-6">
