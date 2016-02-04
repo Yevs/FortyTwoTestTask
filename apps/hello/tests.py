@@ -167,35 +167,6 @@ class EditTest(TestCase):
                       ' enctype="multipart/form-data" id="edit-form">',
                       response.content)
 
-    def test_form_submit_no_auth(self):
-        """
-        Tests whether not logged in user cannot change model instance"""
-
-        data = {'first_name': 'John',
-                'last_name': 'Doe',
-                'birth_date': '1956-01-01',
-                'email': 'john@doe.com'}
-
-        p = Person.objects.first()
-        resp = self.client.post('/edit/', data)
-        self.assertEqual(resp.status_code, 302)
-        self.assertEqual(p.first_name, u'Yevhen')
-
-    def test_form_submit(self):
-        """
-        Tests whether edit actually changes model instance"""
-
-        data = {'first_name': 'John',
-                'last_name': 'Doe',
-                'birth_date': '1956-01-01',
-                'email': 'john@doe.com'}
-
-        resp = self.auth_client.post('/edit/', data)
-        p = Person.objects.first()
-        self.assertEqual(resp.status_code, 302)
-        self.assertEqual(p.first_name, u'John')
-        self.assertEqual(p.birth_date.strftime('%Y-%m-%d'), '1956-01-01')
-
     def test_api_no_auth(self):
         """
         Tests if it is not possible to change model instance

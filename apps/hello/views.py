@@ -1,13 +1,15 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, Http404
-from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from .models import Person, RequestLog
 from .forms import PersonForm
 import json
+import logging
 
 
 REQUESTS_ON_PAGE = 10
+
+logger = logging.getLogger(__name__)
 
 
 def home(request):
@@ -45,6 +47,11 @@ def get_requests(request, req_id):
     return HttpResponse(json.dumps(data))
 
 
+def get_fields_str(form):
+    return ', '.join('{}: {}'.format(field, form[field].value())
+                     for field in form.fields if field != 'avatar')
+
+
 @login_required
 def edit(request):
     """
@@ -56,13 +63,6 @@ def edit(request):
     if request.method == 'GET':
         form = PersonForm(instance=Person.objects.first())
         return render(request, 'hello/form.html', {'form': form})
-    elif request.method == 'POST':
-        form = PersonForm(request.POST, instance=Person.objects.first())
-        if form.is_valid():
-            form.save()
-        return redirect(reverse('hello:home'))
-    else:
-        raise Http404
 
 
 @login_required
@@ -77,8 +77,12 @@ def edit_api(request):
                           instance=Person.objects.first())
         if form.is_valid():
             form.save()
+            logger.info('Successfully submitted form. Fields: {}'.format(
+                get_fields_str(form)))
             return HttpResponse('{"status": "ok"}')
         else:
+            logger.info('Form submition failed. Fields: {}. Errors: {}'.format(
+                get_fields_str(form), json.dumps(form.errors)))
             return HttpResponse(json.dumps({'status': 'error',
                                             'errors': form.errors}))
     else:
