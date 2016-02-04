@@ -49,8 +49,11 @@
                     </div>
                     <div class="image">
                         <div class="image-group">
+                            <div class="row">
+                                <span id="help_avatar" class="help-block"></span>
+                            </div>
                             <span class="btn btn-default btn-file">
-                                Browse <input type="file" name="avatar">
+                                Browse <input type="file" name="avatar" accept="image/*">
                             </span>
                             <span id="file-name"></span>
                             <img id="avatar" src="{{form.instance.avatar.url}}" alt="Uploaded image">

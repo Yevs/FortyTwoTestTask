@@ -31,7 +31,9 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+
 REQUESTS_ON_PAGE = 10
+LOGIN_REDIRECT_URL = '/'
 
 
 # Application definition

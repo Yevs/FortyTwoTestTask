@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
-
+from django.contrib.auth import views as auth_views
 
 urlpatterns = patterns(
     '',
@@ -9,6 +9,6 @@ urlpatterns = patterns(
         'hello.views.get_requests', name='get_requests'),
     url(r'^api/edit/$', 'hello.views.edit_api', name='update'),
     url(r'^edit/$', 'hello.views.edit', name='edit'),
-    url(r'^login/$', 'hello.views.login', name='login'),
-    url(r'^logout/$', 'hello.views.logout', name='logout'),
+    url(r'^login/$', auth_views.login, name='login'),
+    url(r'^logout/$', auth_views.logout, name='logout'),
 )

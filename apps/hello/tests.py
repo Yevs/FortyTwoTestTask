@@ -4,6 +4,7 @@ from django.test import Client
 from django.core import serializers
 from hello.models import Person, RequestLog
 from datetime import datetime
+from PIL import Image
 import json
 import os
 
@@ -132,38 +133,82 @@ class EditTest(TestCase):
 
     fixtures = ['initial_data.json']
 
-    def test_edit_page(self):
+    def setUp(self):
+        self.client = Client()
+        self.auth_client = Client()
+        self.auth_client.login(username='user', password='user')
+
+    def test_edit_page_no_auth(self):
+        """
+        Tests whether GET to /edit/ responds with HTTP 302
+        if user is not authenticated"""
+
+        response = self.client.get('/edit/')
+        self.assertEqual(response.status_code, 302)
+
+    def test_edit_template(self):
         """
         Tests whether GET to /edit/ responds with right template"""
 
-        c = Client()
-        response = c.get('/edit/')
-        self.assertEqual(response.status_code, 302)
-
-        c.login(username='user', password='user')
-        response = c.get('/edit/')
+        response = self.auth_client.get('/edit/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'hello/form.html')
 
-    def test_form_submit(self):
+    def test_form_on_edit_page(self):
         """
-        Tests whether it is possible to submit form via api"""
+        Tests wheter there is form on /edit/ page"""
+
+        response = self.auth_client.get('/edit/')
+        self.assertIn('<form action="/edit" method="post"'
+                      ' class="form-horizontal"'
+                      ' enctype="multipart/form-data" id="edit-form">',
+                      response.content)
+
+    def test_form_submit_no_auth(self):
+        """
+        Tests whether not logged in user cannot change model instance"""
 
         data = {'first_name': 'John',
                 'last_name': 'Doe',
                 'birth_date': '1956-01-01',
                 'email': 'john@doe.com'}
 
-        c = Client()
-        resp = c.post('/edit/', data)
+        p = Person.objects.first()
+        resp = self.client.post('/edit/', data)
         self.assertEqual(resp.status_code, 302)
+        self.assertEqual(p.first_name, u'Yevhen')
 
-        c.login(username='user', password='user')
-        resp = c.post('/edit/', data)
+    def test_form_submit(self):
+        """
+        Tests whether edit actually changes model instance"""
+
+        data = {'first_name': 'John',
+                'last_name': 'Doe',
+                'birth_date': '1956-01-01',
+                'email': 'john@doe.com'}
+
+        resp = self.auth_client.post('/edit/', data)
         p = Person.objects.first()
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(p.first_name, u'John')
         self.assertEqual(p.birth_date.strftime('%Y-%m-%d'), '1956-01-01')
+
+    def test_api_no_auth(self):
+        """
+        Tests if it is not possible to change model instance
+        via api if you are not logged in"""
+
+        data = {'first_name': 'William',
+                'last_name': 'Doe',
+                'biography': '',
+                'email': 'w@doe.com',
+                'skype': '',
+                'jabber': '',
+                'other_contacts': '',
+                'birth_date': '1999-01-01'}
+
+        resp = self.client.post('/api/edit/', data)
+        self.assertEqual(resp.status_code, 302)
 
     def test_api(self):
         """
@@ -180,16 +225,71 @@ class EditTest(TestCase):
 
         with open('uploads/avatars/default.png') as img:
 
-            c = Client()
-            resp = c.post('/api/edit/', data)
-            self.assertEqual(resp.status_code, 302)
-
             data['avatar'] = img
-            c.login(username='user', password='user')
-            resp = c.post('/api/edit/', data)
+            resp = self.auth_client.post('/api/edit/', data)
             result = json.loads(resp.content)
             self.assertEqual(result['status'], 'ok')
             p = Person.objects.first()
             self.assertEqual(p.first_name, u'William')
             self.assertNotEqual(p.avatar, 'avatars/default.png')
             os.remove('uploads/' + str(p.avatar))
+
+    def test_form_validation(self):
+        """
+        Tests form validation(but not image)"""
+
+        data = {'first_name': '',
+                'last_name': '',
+                'email': '',
+                'birth_date': ''}
+
+        resp = self.auth_client.post('/api/edit/', data)
+        self.assertEqual('{"status": "error", "errors":'
+                         ' {"birth_date": ["This field is required."],'
+                         ' "first_name": ["This field is required."],'
+                         ' "last_name": ["This field is required."],'
+                         ' "email": ["This field is required."]}}',
+                         resp.content)
+
+    def test_image_validation(self):
+        """
+        Tests if submitting wrong file type validates"""
+
+        with open('assets/css/hello/style.css') as img:
+            data = {'avatar': img}
+            resp = self.auth_client.post('/api/edit/', data)
+            result = json.loads(resp.content)
+            self.assertEqual(result['status'], 'error')
+            self.assertEqual('Upload a valid image. The file you uploaded was'
+                             ' either not an image or a corrupted image.',
+                             result['errors']['avatar'][0])
+
+    def test_image_resize(self):
+
+        """
+        Tests if submited image gets resized"""
+
+        theFile = 'uploads/avatars/default.png'
+
+        img = Image.open(theFile)
+        resized = img.resize((300, 300))
+        resized.save('tmp.png')
+
+        data = {'first_name': 'William',
+                'last_name': 'Doe',
+                'biography': '',
+                'email': 'w@doe.com',
+                'skype': '',
+                'jabber': '',
+                'other_contacts': '',
+                'birth_date': '1999-01-01'}
+
+        with open('tmp.png') as img:
+            data['avatar'] = img
+            resp = self.auth_client.post('/api/edit/', data)
+            result = json.loads(resp.content)
+            self.assertEqual(result['status'], 'ok')
+            self.assertEqual(200, Person.objects.first().avatar.height)
+            self.assertEqual(200, Person.objects.first().avatar.width)
+
+        os.remove('tmp.png')
