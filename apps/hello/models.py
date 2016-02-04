@@ -29,6 +29,8 @@ class Person(models.Model):
         And resize new avatar to 200x200"""
 
         try:
+            # this - current Person in db
+            # self - Person we are going to replace with
             this = Person.objects.get(id=self.id)
             if this.avatar != self.avatar and\
                'default.png' not in str(this.avatar):

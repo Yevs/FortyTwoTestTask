@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 
 {% block titlte %} Login {% endblock titlte %}
 
@@ -29,7 +30,8 @@
             </form>
         </div>
     </div>
-    <script>
-        $('.holder').childer().addClass('form-control')
-    </script>
 {% endblock content %}
+
+{% block extra_scripts %}
+    <script src="{% static "js/hello/login_form.js" %}"></script>
+{% endblock extra_scripts %}

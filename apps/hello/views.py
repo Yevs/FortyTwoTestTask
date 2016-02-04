@@ -1,9 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, Http404
 from django.core.urlresolvers import reverse
-from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm
 from .models import Person, RequestLog
 from .forms import PersonForm
 import json
@@ -85,35 +83,3 @@ def edit_api(request):
                                             'errors': form.errors}))
     else:
         raise Http404
-
-
-def login(request):
-    """
-    Returns login page on GET
-    Logins a user on POST"""
-
-    if request.user.is_authenticated():
-        return redirect(reverse('hello:home'))
-    if request.method == 'GET':
-        form = AuthenticationForm(request)
-        form.fields['username'].widget.attrs['class'] = 'form-control'
-        form.fields['password'].widget.attrs['class'] = 'form-control'
-        return render(request, 'hello/login.html', {'form': form})
-    elif request.method == 'POST':
-        form = AuthenticationForm(request, request.POST or None)
-        if form.is_valid():
-            auth_login(request, form.get_user())
-            return redirect(reverse('hello:home'))
-        else:
-            return render(request, 'hello/login.html', {'form': form})
-    else:
-        raise Http404
-
-
-@login_required
-def logout(request):
-    """
-    Logs user out"""
-
-    auth_logout(request)
-    return redirect(reverse('hello:home'))
