@@ -193,8 +193,8 @@ class TagTest(TestCase):
 
         p = Person.objects.first()
         rendered = self.render_template(self.template, {'obj': p})
-        expected = '<a href="/admin/hello/person/1/">Edit (admin)</a>'
-        self.assertIn(expected, rendered)
+        expected = '/admin/hello/person/1/'
+        self.assertEqual(expected, rendered)
 
 
 class CommandTest(TestCase):

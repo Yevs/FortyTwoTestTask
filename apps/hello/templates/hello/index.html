@@ -11,7 +11,7 @@
     {% include "hello/header.html" %}
     <div class="jumbotron">
         {% if person %}
-            {% edit_link person %}
+            <a href="{% edit_link person%}">Edit (admin)</a>
         {% endif %}
         {% if person %}
             <div class="row">
