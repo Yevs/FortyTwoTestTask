@@ -39,3 +39,12 @@ class PersonForm(ModelForm):
             'birth_date': Calendar(attrs={'class': 'form-control',
                                           'value': '1990-01-01'}),
         }
+
+    def get_fields_str(self):
+        """
+        Returns fields of form in form field1: value1, field2: value2, ...
+        Used for logging"""
+
+        return u', '.join(u'{}: {}'.format(unicode(field),
+                                           unicode(self[field].value()))
+                          for field in self.fields if field != 'avatar')

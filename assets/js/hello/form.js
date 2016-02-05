@@ -88,7 +88,7 @@ function initFormSubmition(onSuccess) {
                     if (response['status'] == 'error') {
                         parseErrors(response['errors']);
                     } else if (response['status'] == 'ok') {
-                        onSuccess();
+                        onSuccess(response);
                     }
                     stopAnimation();
                     submitted = true;
