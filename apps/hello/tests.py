@@ -5,6 +5,7 @@ from django.core import serializers
 from django.core.management import call_command
 from django.template import Context, Template
 from django.utils.six import StringIO
+from django.contrib.contenttypes.models import ContentType
 
 import json
 import os
@@ -136,39 +137,6 @@ class RequestTest(TestCase):
 class EditTest(TestCase):
 
     fixtures = ['initial_data.json']
-
-    def test_edit_page(self):
-        """
-        Tests whether GET to /edit/ responds with right template"""
-
-        c = Client()
-        response = c.get('/edit/')
-        self.assertEqual(response.status_code, 302)
-
-        c.login(username='user', password='user')
-        response = c.get('/edit/')
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'hello/form.html')
-
-    def test_form_submit(self):
-        """
-        Tests whether it is possible to submit form via api"""
-
-        data = {'first_name': 'John',
-                'last_name': 'Doe',
-                'birth_date': '1956-01-01',
-                'email': 'john@doe.com'}
-
-        c = Client()
-        resp = c.post('/edit/', data)
-        self.assertEqual(resp.status_code, 302)
-
-        c.login(username='user', password='user')
-        resp = c.post('/edit/', data)
-        p = Person.objects.first()
-        self.assertEqual(resp.status_code, 302)
-        self.assertEqual(p.first_name, u'John')
-        self.assertEqual(p.birth_date.strftime('%Y-%m-%d'), '1956-01-01')
 
     def test_api(self):
         """
@@ -320,22 +288,20 @@ class SignalTest(TestCase):
         Tests if adding a model from ignore list would not create db entry"""
 
         old_count = ModelChange.objects.count()
-        ModelChange(type='add',
-                    model='Person',
-                    instance_pk=1).save()
+        ContentType(app_label='hello', model='abc').save()
         new_count = ModelChange.objects.count()
-        # if signal would create entry this would be at least 2
-        self.assertEqual(new_count-old_count, 1)
+        self.assertEqual(new_count, old_count)
 
     def test_ignore_edit(self):
         """
         Tests if changing instance of a model from ignore list
         would not create db entry"""
 
+        c = ContentType(app_label='hello', model='abc')
+        c.save()
         old_count = ModelChange.objects.count()
-        m = ModelChange.objects.first()
-        m.instance_pk = ModelChange.objects.last().instance_pk
-        m.save()
+        c.model = 'cba'
+        c.save()
         new_count = ModelChange.objects.count()
         self.assertEqual(old_count, new_count)
 
@@ -344,7 +310,9 @@ class SignalTest(TestCase):
         Tests if deleting instance of a model from ignore list
         would not create db entry"""
 
+        c = ContentType(app_label='hello', model='abc')
+        c.save()
         old_count = ModelChange.objects.count()
-        ModelChange.objects.first().delete()
+        c.delete()
         new_count = ModelChange.objects.count()
-        self.assertEqual(old_count-new_count, 1)
+        self.assertEqual(old_count, new_count)
