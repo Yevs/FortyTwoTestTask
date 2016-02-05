@@ -12,7 +12,7 @@
     <div class="jumbotron">
         <div id="person-info">
             {% if person %}
-                {% edit_link person %}
+                <a href="{% edit_link person %}">Edit (admin)</a>
                 <div class="row">
                     <div class="col-md-6">
                         <h5><strong><span id="first_name_field">{{ person.first_name }}</span></strong></h5>

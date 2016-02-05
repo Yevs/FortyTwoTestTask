@@ -11,4 +11,4 @@ class RequestLoggerMiddleware(object):
     def process_view(self, request, view_func, view_args, view_kwargs):
         if view_func in self.VIEWS:
             RequestLog(method=request.method, path=request.path).save()
-        return None    
+        return None

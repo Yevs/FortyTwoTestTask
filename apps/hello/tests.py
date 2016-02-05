@@ -5,6 +5,7 @@ from django.core import serializers
 from django.core.management import call_command
 from django.template import Context, Template
 from django.utils.six import StringIO
+from django.contrib.contenttypes.models import ContentType
 
 from mock import patch
 from PIL import Image
@@ -347,8 +348,8 @@ class TagTest(TestCase):
 
         p = Person.objects.first()
         rendered = self.render_template(self.template, {'obj': p})
-        expected = '<a href="/admin/hello/person/1/">Edit (admin)</a>'
-        self.assertIn(expected, rendered)
+        expected = '/admin/hello/person/1/'
+        self.assertEqual(expected, rendered)
 
 
 class CommandTest(TestCase):
@@ -442,22 +443,20 @@ class SignalTest(TestCase):
         Tests if adding a model from ignore list would not create db entry"""
 
         old_count = ModelChange.objects.count()
-        ModelChange(type='add',
-                    model='Person',
-                    instance_pk=1).save()
+        ContentType(app_label='hello', model='abc').save()
         new_count = ModelChange.objects.count()
-        # if signal would create entry this would be at least 2
-        self.assertEqual(new_count-old_count, 1)
+        self.assertEqual(new_count, old_count)
 
     def test_ignore_edit(self):
         """
         Tests if changing instance of a model from ignore list
         would not create db entry"""
 
+        c = ContentType(app_label='hello', model='abc')
+        c.save()
         old_count = ModelChange.objects.count()
-        m = ModelChange.objects.first()
-        m.instance_pk = ModelChange.objects.last().instance_pk
-        m.save()
+        c.model = 'cba'
+        c.save()
         new_count = ModelChange.objects.count()
         self.assertEqual(old_count, new_count)
 
@@ -466,7 +465,9 @@ class SignalTest(TestCase):
         Tests if deleting instance of a model from ignore list
         would not create db entry"""
 
+        c = ContentType(app_label='hello', model='abc')
+        c.save()
         old_count = ModelChange.objects.count()
-        ModelChange.objects.first().delete()
+        c.delete()
         new_count = ModelChange.objects.count()
-        self.assertEqual(old_count-new_count, 1)
+        self.assertEqual(old_count, new_count)
