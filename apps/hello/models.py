@@ -46,6 +46,17 @@ class Person(models.Model):
             image.thumbnail(size, Image.ANTIALIAS)
             image.save(self.avatar.path)
 
+    def get_dict(self):
+        """
+        Serializes object the way it is convinient for api
+        because default serialization is not as good"""
+
+        person_dict = self.__dict__
+        person_dict['avatar'] = self.avatar.url
+        person_dict['birth_date'] = str(self.birth_date)
+        person_dict.pop('_state', None)
+        return person_dict
+
     def __unicode__(self):
         return self.first_name + ' ' + self.last_name
 

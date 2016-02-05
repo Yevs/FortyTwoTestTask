@@ -9,37 +9,47 @@
 {% block content %}
     {% include "hello/header.html" %}
     <div class="jumbotron">
-        {% if person %}
-            <div class="row">
-                <div class="col-md-6">
-                    <h5><strong>{{ person.first_name }}</strong></h5>
-                    <h5><strong>{{ person.last_name }}</strong></h5>
-                    <h5><strong>Date of Birth:</strong> {{ person.birth_date }}</h5>
-                    <div class="image">
-                        <img src="{{ person.avatar.url }}" alt="user">
+        <div id="person-info">
+            {% if person %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5><strong><span id="first_name_field">{{ person.first_name }}</span></strong></h5>
+                        <h5><strong><span id="last_name_field">{{ person.last_name }}</span></strong></h5>
+                        <h5><strong>Date of Birth:</strong> <span id="birth_date_field">{{ person.birth_date|date:'Y-m-d' }}</span></h5>
+                        <div class="image">
+                            <img src="{{ person.avatar.url }}" alt="user" id="avatar_field">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h5><strong>Contacts</strong></h5>
+                        <h5><strong>Email:</strong> <span id="email_field">{{ person.email }}</span></h5>
+                        {% if person.jabber %}
+                           <h5><strong>Jabber:</strong> <span id="jabber_field">{{ person.jabber }}</span></h5>
+                        {% endif %}
+                        {% if person.skype %}
+                            <h5><strong>Skype:</strong> <span id="skype_field">{{ person.skype }}</span></h5>
+                        {% endif %}
+                        {% if person.other_contacts %}
+                            <h5><strong>Other:</strong></h5>
+                            <p id="other_contacts_field"> {{ person.other_contacts }}</p>
+                        {% endif %}
+                        {% if person.biography%}
+                            <h5><strong>Bio:</strong></h5>
+                            <p id="biography_field">{{ person.biography }}</p>
+                        {% endif %}
+                        {% if user.is_authenticated and person %}
+                            <button id="edit" class="btn btn-primary">Edit</button>
+                        {% endif %}
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <h5><strong>Contacts</strong></h5>
-                    <h5><strong>Email:</strong> {{ person.email }}</h5>
-                    {% if person.jabber %}
-                       <h5><strong>Jabber:</strong> {{ person.jabber }}</h5>
-                    {% endif %}
-                    {% if person.skype %}
-                        <h5><strong>Skype:</strong> {{ person.skype }}</h5>
-                    {% endif %}
-                    {% if person.other_contacts %}
-                        <h5><strong>Other:</strong></h5>
-                        <p> {{ person.other_contacts }}</p>
-                    {% endif %}
-                    {% if person.biography%}
-                    <h5><strong>Bio:</strong></h5>
-                    <p id="bio">{{ person.biography }}</p>
-                    {% endif %}
-                </div>
+            {% else %}
+                <h1>No persons in the database</h1>
+            {% endif %}
+        </div>
+        {% if person %}
+            <div id="form-container" hidden>
+                {% include "hello/form.html" %}
             </div>
-        {% else %}
-            <h1>No persons in the database</h1>
         {% endif %}
     </div>
 {% endblock content %}

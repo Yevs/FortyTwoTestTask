@@ -17,7 +17,9 @@ def home(request):
     Returns index page with person's details"""
 
     person = Person.objects.all().order_by('id').first()
-    return render(request, 'hello/index.html', {'person': person})
+    form = PersonForm(instance=person)
+    return render(request, 'hello/index.html', {'person': person,
+                                                'form': form})
 
 
 def requests(request):
@@ -44,24 +46,6 @@ def get_requests(request, req_id):
     return HttpResponse(data)
 
 
-def get_fields_str(form):
-    return ', '.join('{}: {}'.format(field, form[field].value())
-                     for field in form.fields if field != 'avatar')
-
-
-@login_required
-def edit(request):
-    """
-    Returns edit page on GET
-    Validates data and saves changes on POST"""
-
-    if Person.objects.count() == 0:
-        raise Http404
-    if request.method == 'GET':
-        form = PersonForm(instance=Person.objects.first())
-        return render(request, 'hello/form.html', {'form': form})
-
-
 @login_required
 def edit_api(request):
     """
@@ -73,13 +57,15 @@ def edit_api(request):
         form = PersonForm(data=request.POST, files=request.FILES,
                           instance=Person.objects.first())
         if form.is_valid():
-            form.save()
-            logger.info('Successfully submitted form. Fields: {}'.format(
-                get_fields_str(form)))
-            return HttpResponse('{"status": "ok"}')
+            person = form.save()
+            logger.info(u'Successfully submitted form. Fields: {}'.format(
+                form.get_fields_str()))
+            return HttpResponse(json.dumps({'status': 'ok',
+                                            'person': person.get_dict()}))
         else:
-            logger.info('Form submition failed. Fields: {}. Errors: {}'.format(
-                get_fields_str(form), json.dumps(form.errors)))
+            logger.info(u'Form submition failed. Fields: {}.'
+                        u' Errors: {}'.format(form.get_fields_str(),
+                                              json.dumps(form.errors)))
             return HttpResponse(json.dumps({'status': 'error',
                                             'errors': form.errors}))
     else:

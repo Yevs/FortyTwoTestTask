@@ -1,138 +1,121 @@
-{% extends "base.html" %}
 {% load staticfiles %}
-{% block title %}Edit{% endblock title %}
-{% block extra_head %}
-    <link rel="stylesheet" href="{% static "css/hello/form.css" %}">
-{% endblock extra_head %}
-{% block content %}
-    {% include "hello/header.html" %}
-    <div class="jumbotron">
-        <div class="row">
-            <form action="/edit" method="post" class="form-horizontal" enctype="multipart/form-data" id="edit-form">
-                {% csrf_token %}
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-sm-5"></div>
-                            <span id="help_first_name" class="help-block col-sm-7"></span>
-                        </div>
-                        <div class="row">
-                            <label for="{{ form.first_name.id_for_label }}" class="col-sm-5 control-label">Name:</label>
-                            <div class="col-sm-7 control-label">
-                                {{ form.first_name }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-sm-5"></div>
-                            <span id="help_last_name" class="help-block col-sm-7"></span>
-                        </div>
-                        <div class="row">
-                            <label for="{{ form.last_name.id_for_label }}" class="col-sm-5 control-label">Last name:</label>
-                            <div class="col-sm-7 control-label">
-                                {{ form.last_name }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-sm-5"></div>
-                            <span id="help_birth_date" class="help-block col-sm-7"></span>
-                        </div>
-                        <div class="row">
-                            <label for="{{ form.birth_date.id_for_label }}" class="col-sm-5 control-label">Date of Birth:</label>
-                            <div class="col-sm-7 control-label">
-                                {{ form.birth_date }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="image">
-                        <div class="image-group">
-                            <div class="row">
-                                <span id="help_avatar" class="help-block"></span>
-                            </div>
-                            <span class="btn btn-default btn-file">
-                                Browse <input type="file" name="avatar" accept="image/*">
-                            </span>
-                            <span id="file-name"></span>
-                            <img id="avatar" src="{{form.instance.avatar.url}}" alt="Uploaded image">
-                        </div>
+<div class="row">
+    <form action="/edit" method="post" class="form-horizontal" enctype="multipart/form-data" id="edit-form">
+        {% csrf_token %}
+        <div class="col-md-6">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-5"></div>
+                    <span id="help_first_name" class="help-block col-sm-7"></span>
+                </div>
+                <div class="row">
+                    <label for="{{ form.first_name.id_for_label }}" class="col-sm-5 control-label">Name:</label>
+                    <div class="col-sm-7 control-label">
+                        {{ form.first_name }}
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-sm-3"></div>
-                            <span id="help_email" class="help-block col-sm-9"></span>
-                        </div>
-                        <div class="row">
-                            <label for="{{ form.email.id_for_label }}" class="col-sm-3 control-label">Email:</label>
-                            <div class="col-sm-9 control-label">
-                                {{ form.email }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-sm-3"></div>
-                            <span id="help_skype" class="help-block col-sm-9"></span>
-                        </div>
-                        <div class="row">
-                            <label for="{{ form.skype.id_for_label }}" class="col-sm-3 control-label">Skype:</label>
-                            <div class="col-sm-9 control-label">
-                                {{ form.skype }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-sm-3"></div>
-                            <span id="help_jabber" class="help-block col-sm-9"></span>
-                        </div>
-                        <div class="row">
-                            <label for="{{ form.jabber.id_for_label }}" class="col-sm-3 control-label">Jabber:</label>
-                            <div class="col-sm-9 control-label">
-                                {{ form.jabber }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="row">
-                            <span id="help_biography" class="help-block col-sm-12"></span>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <label for="{{ form.biography.id_for_label }}">Other contacts:</label>
-                                {{ form.biography }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="row">
-                            <span id="help_other_contacts" class="help-block col-sm-12"></span>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <label for="{{ form.other_contacts.id_for_label }}">Biography:</label>
-                                {{ form.other_contacts }}
-                            </div>
-                        </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-5"></div>
+                    <span id="help_last_name" class="help-block col-sm-7"></span>
+                </div>
+                <div class="row">
+                    <label for="{{ form.last_name.id_for_label }}" class="col-sm-5 control-label">Last name:</label>
+                    <div class="col-sm-7 control-label">
+                        {{ form.last_name }}
                     </div>
                 </div>
-                <div class="form-group">
-                    <a class="btn btn-primary" id="submit">Submit</a>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-5"></div>
+                    <span id="help_birth_date" class="help-block col-sm-7"></span>
                 </div>
-                <div class="animate"></div>
-            </form>
+                <div class="row">
+                    <label for="{{ form.birth_date.id_for_label }}" class="col-sm-5 control-label">Date of Birth:</label>
+                    <div class="col-sm-7 control-label">
+                        {{ form.birth_date }}
+                    </div>
+                </div>
+            </div>
+            <div class="image">
+                <div class="image-group">
+                    <div class="row">
+                        <span id="help_avatar" class="help-block"></span>
+                    </div>
+                    <span class="btn btn-default btn-file">
+                        Browse <input type="file" name="avatar" accept="image/*">
+                    </span>
+                    <span id="file-name"></span>
+                    <img id="avatar" src="{{form.instance.avatar.url}}" alt="Uploaded image">
+                </div>
+            </div>
         </div>
-    </div>   
-{% endblock content %}
-
-{% block extra_scripts %}
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-    {% include "hello/csrf_setup.html" %}
-    <script src="http://malsup.github.io/min/jquery.form.min.js"></script>
-    <script src="{% static "js/hello/form.js" %}"></script>
-    </script>
-{% endblock extra_scripts %}
+        <div class="col-md-6">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-3"></div>
+                    <span id="help_email" class="help-block col-sm-9"></span>
+                </div>
+                <div class="row">
+                    <label for="{{ form.email.id_for_label }}" class="col-sm-3 control-label">Email:</label>
+                    <div class="col-sm-9 control-label">
+                        {{ form.email }}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-3"></div>
+                    <span id="help_skype" class="help-block col-sm-9"></span>
+                </div>
+                <div class="row">
+                    <label for="{{ form.skype.id_for_label }}" class="col-sm-3 control-label">Skype:</label>
+                    <div class="col-sm-9 control-label">
+                        {{ form.skype }}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-3"></div>
+                    <span id="help_jabber" class="help-block col-sm-9"></span>
+                </div>
+                <div class="row">
+                    <label for="{{ form.jabber.id_for_label }}" class="col-sm-3 control-label">Jabber:</label>
+                    <div class="col-sm-9 control-label">
+                        {{ form.jabber }}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <span id="help_biography" class="help-block col-sm-12"></span>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label for="{{ form.biography.id_for_label }}">Other contacts:</label>
+                        {{ form.biography }}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <span id="help_other_contacts" class="help-block col-sm-12"></span>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label for="{{ form.other_contacts.id_for_label }}">Biography:</label>
+                        {{ form.other_contacts }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <a id="cancel" class="btn btn-danger">Cancel</a>
+            <a class="btn btn-primary" id="submit">Submit</a>
+        </div>
+        <div class="animate"></div>
+    </form>
+</div>

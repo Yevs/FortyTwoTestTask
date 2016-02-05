@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.test import Client
 from django.core import serializers
 from hello.models import Person, RequestLog
+from mock import patch
 from datetime import datetime
 from PIL import Image
 import json
@@ -16,6 +17,7 @@ class PersonTest(TestCase):
     def test_unicode(self):
         """
         Tests assigning unicode values to Person model's fields"""
+
         p = Person.objects.first()
         name = u'Аркадий'
         p.first_name = name
@@ -24,6 +26,31 @@ class PersonTest(TestCase):
         c = Client()
         response = c.get('/')
         self.assertIn(name, response.content.decode('utf-8'))
+
+    def test_to_dict(self):
+        """
+        Tests if to_dict method returns right value"""
+
+        p = Person.objects.first()
+        self.assertEqual(json.dumps(p.get_dict()),
+                         '{"first_name": "Yevhen",'
+                         ' "last_name":'
+                         ' "Yevsyuhov", "other_contacts":'
+                         ' "phone: 0971339340",'
+                         ' "email": "yevhen.yevsyuhov@gmail.com",'
+                         ' "avatar": "/uploads/avatars/default.png",'
+                         ' "skype": "yevhen.yevsyuhov",'
+                         ' "birth_date": "1997-09-16",'
+                         ' "jabber": "yevs@42cc.co",'
+                         ' "id": 1,'
+                         ' "biography": "I was born'
+                         ' 16th of September in 1997.'
+                         '  During my childhood I liked'
+                         ' to play videogames a lot.'
+                         '  That\'s what made me curious'
+                         ' about computers and how '
+                         'they work. Now I am receiving'
+                         ' CS Bachelor degree at NTUU \'KPI\'"}')
 
 
 class IndexTest(TestCase):
@@ -43,7 +70,7 @@ class IndexTest(TestCase):
         self.assertEqual(response.context['person'], Person.objects.all()[0])
         self.assertIn('Yevhen', response.content)
         self.assertIn('Yevsyuhov', response.content)
-        self.assertIn('Sept. 16, 1997', response.content)
+        self.assertIn('1997-09-16', response.content)
         self.assertIn('yevhen.yevsyuhov', response.content)
         self.assertIn('yevs@42cc.co', response.content)
 
@@ -121,7 +148,7 @@ class RequestTest(TestCase):
 
     def test_api_logging(self):
         """
-        Tests whether api call are not being logged"""
+        Tests whether api call are not being logged to db"""
 
         old_amount = RequestLog.objects.count()
         self.client.get('/api/requests/1')
@@ -137,32 +164,6 @@ class EditTest(TestCase):
         self.client = Client()
         self.auth_client = Client()
         self.auth_client.login(username='user', password='user')
-
-    def test_edit_page_no_auth(self):
-        """
-        Tests whether GET to /edit/ responds with HTTP 302
-        if user is not authenticated"""
-
-        response = self.client.get('/edit/')
-        self.assertEqual(response.status_code, 302)
-
-    def test_edit_template(self):
-        """
-        Tests whether GET to /edit/ responds with right template"""
-
-        response = self.auth_client.get('/edit/')
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'hello/form.html')
-
-    def test_form_on_edit_page(self):
-        """
-        Tests wheter there is form on /edit/ page"""
-
-        response = self.auth_client.get('/edit/')
-        self.assertIn('<form action="/edit" method="post"'
-                      ' class="form-horizontal"'
-                      ' enctype="multipart/form-data" id="edit-form">',
-                      response.content)
 
     def test_api_no_auth(self):
         """
@@ -264,3 +265,53 @@ class EditTest(TestCase):
             self.assertEqual(200, Person.objects.first().avatar.width)
 
         os.remove('tmp.png')
+
+
+class LogTest(TestCase):
+
+    def setUp(self):
+        self.auth_client = Client()
+        self.auth_client.login(username='user',
+                               password='user')
+
+    @patch('hello.views.logger')
+    def test_error_log(self, mock_logger):
+        """
+        Tests if failed form submition is logged"""
+
+        data = {'first_name': '',
+                'last_name': '',
+                'email': '',
+                'birth_date': ''}
+
+        self.auth_client.post('/api/edit/', data)
+        expected = u'Form submition failed. Fields: first_name: , '\
+                   u'last_name: , birth_date: , biography: None, email:'\
+                   u' , skype: None, jabber: None, other_contacts: None.'\
+                   u' Errors: {"birth_date": ["This field is required."],'\
+                   u' "first_name": ["This field is required."], '\
+                   u'"last_name": ["This field is required."],'\
+                   u' "email": ["This field is required."]}'
+        mock_logger.info.assert_called_with(expected)
+
+    @patch('hello.views.logger')
+    def test_ok_log(self, mock_logger):
+        """
+        Tests if successful form submition is logged"""
+
+        data = {'first_name': 'William',
+                'last_name': 'Doe',
+                'biography': '',
+                'email': 'w@doe.com',
+                'skype': '',
+                'jabber': '',
+                'other_contacts': '',
+                'birth_date': '1999-01-01'}
+
+        self.auth_client.post('/api/edit/', data)
+        expected = u'Successfully submitted form. Fields:'\
+                   u' first_name: William, last_name: Doe,'\
+                   u' birth_date: 1999-01-01, biography: ,'\
+                   u' email: w@doe.com, skype: , jabber: ,'\
+                   u' other_contacts: '
+        mock_logger.info.assert_called_with(expected)
