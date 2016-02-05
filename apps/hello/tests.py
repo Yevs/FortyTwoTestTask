@@ -2,12 +2,17 @@
 from django.test import TestCase
 from django.test import Client
 from django.core import serializers
-from hello.models import Person, RequestLog
+from django.core.management import call_command
+from django.template import Context, Template
+from django.utils.six import StringIO
+
 from mock import patch
-from datetime import datetime
 from PIL import Image
+from datetime import datetime
 import json
 import os
+
+from hello.models import Person, RequestLog, ModelChange
 
 
 class PersonTest(TestCase):
@@ -97,7 +102,7 @@ class IndexTest(TestCase):
 
 class RequestTest(TestCase):
 
-    fixtures = ['request_fixtures.json']
+    fixtures = ['initial_data.json']
 
     def setUp(self):
         self.client = Client()
@@ -315,3 +320,153 @@ class LogTest(TestCase):
                    u' email: w@doe.com, skype: , jabber: ,'\
                    u' other_contacts: '
         mock_logger.info.assert_called_with(expected)
+
+
+class TagTest(TestCase):
+
+    fixtures = ['initial_data.json']
+
+    def setUp(self):
+        self.template = '{% load hello_tags %}{% edit_link obj %}'
+
+    def render_template(self, template, context=None):
+        context = context or {}
+        context = Context(context)
+        return Template(template).render(context)
+
+    def test_edit_link_error(self):
+        """
+        Tests whether passing wrong argument to tag raises ValueError"""
+
+        with self.assertRaises(ValueError):
+            self.render_template(self.template, {'obj': 'string'})
+
+    def test_edit_link(self):
+        """
+        Tests whether tag renders right link"""
+
+        p = Person.objects.first()
+        rendered = self.render_template(self.template, {'obj': p})
+        expected = '<a href="/admin/hello/person/1/">Edit (admin)</a>'
+        self.assertIn(expected, rendered)
+
+
+class CommandTest(TestCase):
+
+    fixtures = ['initial_data.json']
+
+    def get_err_output(self, output):
+        return '\n'.join(
+            'error: ' + line for line in output.split('\n')[:-1]) + '\n'
+
+    def test_command_option(self):
+        """
+        Tests whether command 'models' works right with '--all' option"""
+
+        args = []
+        options = {'app': True}
+        out, err = StringIO(), StringIO()
+        call_command('models', *args, stdout=out, stderr=err, **options)
+        expected = 'Person (count: 1)\n'\
+                   'RequestLog (count: 10)\n'\
+                   'ModelChange (count: 26)\n'
+        err_expected = self.get_err_output(expected)
+        self.assertEqual(expected, out.getvalue())
+        self.assertEqual(err_expected, err.getvalue())
+
+    def test_command_no_option(self):
+        """
+        Tests whether command 'models' works right"""
+        args = []
+        options = {'app': False}
+        out, err = StringIO(), StringIO()
+        call_command('models', *args, stdout=out, stderr=err, **options)
+        expected = 'Session (count: 0)\n'\
+                   'LogEntry (count: 0)\n'\
+                   'Permission (count: 30)\n'\
+                   'Group (count: 0)\n'\
+                   'User (count: 2)\n'\
+                   'ContentType (count: 10)\n'\
+                   'Person (count: 1)\n'\
+                   'RequestLog (count: 10)\n'\
+                   'ModelChange (count: 26)\n'\
+                   'MigrationHistory (count: 0)\n'
+        err_expected = self.get_err_output(expected)
+        self.assertEqual(expected, out.getvalue())
+        self.assertEqual(err_expected, err.getvalue())
+
+
+class SignalTest(TestCase):
+
+    fixtures = ['initial_data.json']
+
+    def test_add(self):
+        """
+        Tests if adding a Person would create and 'add' db entry"""
+
+        p = Person(first_name='John',
+                   last_name='Doe',
+                   email='john@doe.com',
+                   birth_date=datetime.now())
+        p.save()
+        logs = ModelChange.objects.filter(instance_pk=p.pk)
+        self.assertTrue(logs.exists())
+        self.assertEqual(logs.first().type, 'add')
+
+    def test_edit(self):
+        """
+        Tests if changing a Person would create an 'edit' db entry"""
+
+        p = Person.objects.first()
+        p.first_name = 'John'
+        p.save()
+        logs = ModelChange.objects.filter(model='Person',
+                                          instance_pk=p.pk)
+        self.assertTrue(logs.exists())
+        self.assertEqual(logs.last().type, 'edit')
+
+    def test_delete(self):
+        """
+        Tests if deleting a Person would create a 'delete' db entry"""
+
+        p = Person.objects.first()
+        pk = p.pk
+        p.delete()
+        logs = ModelChange.objects.filter(model='Person',
+                                          instance_pk=pk)
+        self.assertTrue(logs.exists())
+        self.assertEqual(logs.last().type, 'delete')
+
+    def test_ignore_add(self):
+        """
+        Tests if adding a model from ignore list would not create db entry"""
+
+        old_count = ModelChange.objects.count()
+        ModelChange(type='add',
+                    model='Person',
+                    instance_pk=1).save()
+        new_count = ModelChange.objects.count()
+        # if signal would create entry this would be at least 2
+        self.assertEqual(new_count-old_count, 1)
+
+    def test_ignore_edit(self):
+        """
+        Tests if changing instance of a model from ignore list
+        would not create db entry"""
+
+        old_count = ModelChange.objects.count()
+        m = ModelChange.objects.first()
+        m.instance_pk = ModelChange.objects.last().instance_pk
+        m.save()
+        new_count = ModelChange.objects.count()
+        self.assertEqual(old_count, new_count)
+
+    def test_ignore_delete(self):
+        """
+        Tests if deleting instance of a model from ignore list
+        would not create db entry"""
+
+        old_count = ModelChange.objects.count()
+        ModelChange.objects.first().delete()
+        new_count = ModelChange.objects.count()
+        self.assertEqual(old_count-new_count, 1)
