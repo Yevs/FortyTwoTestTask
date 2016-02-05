@@ -1,14 +1,14 @@
+from django.contrib.auth.views import login, logout
 from .models import RequestLog
+from .views import home, requests
 
 
 class RequestLoggerMiddleware(object):
 
     def __init__(self):
-        self.IGNORE = ['/api/', '/static/', 'favicon.ico', '/uploads/']
+        self.VIEWS = [home, requests, login, logout]
 
-    def process_request(self, request):
-        for path in self.IGNORE:
-            if path in request.path:
-                return None
-        else:
+    def process_view(self, request, view_func, view_args, view_kwargs):
+        if view_func in self.VIEWS:
             RequestLog(method=request.method, path=request.path).save()
+        return None    
