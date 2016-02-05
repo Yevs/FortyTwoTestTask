@@ -3,10 +3,12 @@ from .models import RequestLog
 
 class RequestLoggerMiddleware(object):
 
+    def __init__(self):
+        self.IGNORE = ['/api/', '/static/', 'favicon.ico', '/uploads/']
+
     def process_request(self, request):
-        if '/api/' not in request.path and\
-           '/static/' not in request.path and\
-           'favicon.ico' not in request.path and\
-           '/uploads/' not in request.path:
+        for path in self.IGNORE:
+            if path in request.path:
+                return None
+        else:
             RequestLog(method=request.method, path=request.path).save()
-        return None
