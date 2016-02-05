@@ -1,47 +1,33 @@
-from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from hello.models import Person, RequestLog, ModelChange
+from django.db.models.signals import post_save, post_delete
+
+from django.contrib.sessions.models import Session
+from django.contrib.contenttypes.models import ContentType
+from hello.models import ModelChange
+
+# IMPORTANT: do not remove ModelChane from the list:
+# will result in forever recursion
+IGNORE = [Session, ContentType, ModelChange]
 
 
-@receiver(post_save, sender=Person)
-def person_change(sender, **kwargs):
+@receiver(post_save)
+def model_change(sender, **kwargs):
+    if sender in IGNORE:
+        return
     if kwargs['created']:
         ModelChange(type='add',
-                    model='Person',
+                    model=sender.__name__,
                     instance_pk=kwargs['instance'].pk).save()
-        return
-    # else would be better here but then
-    # there would be flake8 error
-    # "functions should be longer than single if"
-    ModelChange(type='edit',
-                model='Person',
-                instance_pk=kwargs['instance'].pk).save()
+    else:
+        ModelChange(type='edit',
+                    model=sender.__name__,
+                    instance_pk=kwargs['instance'].pk).save()
 
 
-@receiver(post_delete, sender=Person)
+@receiver(post_delete)
 def person_delete(sender, **kwargs):
-    ModelChange(type='delete',
-                model='Person',
-                instance_pk=kwargs['instance'].pk).save()
-
-
-@receiver(post_save, sender=RequestLog)
-def request_log_change(sender, **kwargs):
-    if kwargs['created']:
-        ModelChange(type='add',
-                    model='RequestLog',
-                    instance_pk=kwargs['instance'].pk).save()
+    if sender in IGNORE:
         return
-    # else would be better here but then
-    # there would be flake8 error
-    # "functions should be longer than single if"
-    ModelChange(type='edit',
-                model='RequestLog',
-                instance_pk=kwargs['instance'].pk).save()
-
-
-@receiver(post_delete, sender=RequestLog)
-def request_log_delete(sender, **kwargs):
     ModelChange(type='delete',
-                model='RequestLog',
+                model=sender.__name__,
                 instance_pk=kwargs['instance'].pk).save()

@@ -247,7 +247,7 @@ class CommandTest(TestCase):
         call_command('models', *args, stdout=out, stderr=err, **options)
         expected = 'Person (count: 1)\n'\
                    'RequestLog (count: 10)\n'\
-                   'ModelChange (count: 22)\n'
+                   'ModelChange (count: 26)\n'
         err_expected = self.get_err_output(expected)
         self.assertEqual(expected, out.getvalue())
         self.assertEqual(err_expected, err.getvalue())
@@ -267,7 +267,7 @@ class CommandTest(TestCase):
                    'ContentType (count: 10)\n'\
                    'Person (count: 1)\n'\
                    'RequestLog (count: 10)\n'\
-                   'ModelChange (count: 22)\n'\
+                   'ModelChange (count: 26)\n'\
                    'MigrationHistory (count: 0)\n'
         err_expected = self.get_err_output(expected)
         self.assertEqual(expected, out.getvalue())
@@ -278,7 +278,7 @@ class SignalTest(TestCase):
 
     fixtures = ['initial_data.json']
 
-    def test_person_add(self):
+    def test_add(self):
         """
         Tests if adding a Person would create and 'add' db entry"""
 
@@ -291,7 +291,7 @@ class SignalTest(TestCase):
         self.assertTrue(logs.exists())
         self.assertEqual(logs.first().type, 'add')
 
-    def test_person_edit(self):
+    def test_edit(self):
         """
         Tests if changing a Person would create an 'edit' db entry"""
 
@@ -303,7 +303,7 @@ class SignalTest(TestCase):
         self.assertTrue(logs.exists())
         self.assertEqual(logs.last().type, 'edit')
 
-    def test_person_delete(self):
+    def test_delete(self):
         """
         Tests if deleting a Person would create a 'delete' db entry"""
 
@@ -315,37 +315,36 @@ class SignalTest(TestCase):
         self.assertTrue(logs.exists())
         self.assertEqual(logs.last().type, 'delete')
 
-    def test_request_log_add(self):
+    def test_ignore_add(self):
         """
-        Tests if adding a RequestLog would create and 'add' db entry"""
+        Tests if adding a model from ignore list would not create db entry"""
 
-        r = RequestLog(method='GET', path='/')
-        r.save()
-        logs = ModelChange.objects.filter(model='RequestLog',
-                                          instance_pk=r.pk)
-        self.assertTrue(logs.exists())
-        self.assertEqual(logs.first().type, 'add')
+        old_count = ModelChange.objects.count()
+        ModelChange(type='add',
+                    model='Person',
+                    instance_pk=1).save()
+        new_count = ModelChange.objects.count()
+        # if signal would create entry this would be at least 2
+        self.assertEqual(new_count-old_count, 1)
 
-    def test_request_log_edit(self):
+    def test_ignore_edit(self):
         """
-        Tests if changing a RequestLog would create and 'edit' db entry"""
+        Tests if changing instance of a model from ignore list
+        would not create db entry"""
 
-        r = RequestLog.objects.first()
-        r.path = '/edit/'
-        r.save()
-        logs = ModelChange.objects.filter(model='RequestLog',
-                                          instance_pk=r.pk)
-        self.assertTrue(logs.exists())
-        self.assertEqual(logs.last().type, 'edit')
+        old_count = ModelChange.objects.count()
+        m = ModelChange.objects.first()
+        m.instance_pk = ModelChange.objects.last().instance_pk
+        m.save()
+        new_count = ModelChange.objects.count()
+        self.assertEqual(old_count, new_count)
 
-    def test_request_log_delete(self):
+    def test_ignore_delete(self):
         """
-        Tests if deleting a RequestLog would create a 'delete' db entry"""
+        Tests if deleting instance of a model from ignore list
+        would not create db entry"""
 
-        r = RequestLog.objects.first()
-        pk = r.pk
-        r.delete()
-        logs = ModelChange.objects.filter(model='RequestLog',
-                                          instance_pk=pk)
-        self.assertTrue(logs.exists())
-        self.assertEqual(logs.last().type, 'delete')
+        old_count = ModelChange.objects.count()
+        ModelChange.objects.first().delete()
+        new_count = ModelChange.objects.count()
+        self.assertEqual(old_count-new_count, 1)
