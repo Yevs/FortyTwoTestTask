@@ -16,3 +16,6 @@ static
 *.dat
 .env
 fortytwo_test_task/settings/local.py
+form.log
+uploads/*
+!uploads/avatars/default.png
