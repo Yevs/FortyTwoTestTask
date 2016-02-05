@@ -12,16 +12,19 @@ IGNORE = [Session, ContentType, ModelChange]
 
 @receiver(post_save)
 def model_change(sender, **kwargs):
-    if sender in IGNORE:
-        return
-    if kwargs['created']:
-        ModelChange(type='add',
-                    model=sender.__name__,
-                    instance_pk=kwargs['instance'].pk).save()
-    else:
-        ModelChange(type='edit',
-                    model=sender.__name__,
-                    instance_pk=kwargs['instance'].pk).save()
+    try:  # in order to work with south migrations
+        if sender in IGNORE:
+            return
+        if kwargs['created']:
+            ModelChange(type='add',
+                        model=sender.__name__,
+                        instance_pk=kwargs['instance'].pk).save()
+        else:
+            ModelChange(type='edit',
+                        model=sender.__name__,
+                        instance_pk=kwargs['instance'].pk).save()
+    except:
+        pass
 
 
 @receiver(post_delete)
