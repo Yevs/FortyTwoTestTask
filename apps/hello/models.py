@@ -65,11 +65,13 @@ class RequestLog(models.Model):
     datetime = models.DateTimeField(blank=False, auto_now_add=True)
     method = models.CharField(blank=False, max_length=40)
     path = models.CharField(blank=False, max_length=40)
+    priority = models.IntegerField(blank=False, default=0)
 
     def __unicode__(self):
         return \
             self.datetime.strftime('%d/%b/%Y %H:%M') +\
-            ' ' + self.method + ' ' + self.path
+            ' ' + self.method + ' ' + self.path +\
+            ' priority=' + str(self.priority)
 
 
 class ModelChange(models.Model):

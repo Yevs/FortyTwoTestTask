@@ -34,14 +34,61 @@ def requests(request):
                             'last_req_id': last_req_id})
 
 
-def get_requests(request, req_id):
+def parse_args(args):
+    """
+    Parses arguments for requests api functions"""
+
+    count = int(args.get('count', settings.REQUESTS_ON_PAGE))
+    lower = int(args.get('lower', 0))
+    upper = int(args.get('upper', 2147483647))  # max value
+    order = 'time'
+    if 'order' in args:
+        if args['order'].strip() == 'priority':
+            order = 'priority'
+    return count, lower, upper, order
+
+
+def get_requests_by_args(count, lower, upper, order, datetime=None):
+    """
+    Returns requests from db that satisfy order"""
+
+    if order == 'time':
+        ordering = ('-datetime', '-priority')
+    else:
+        ordering = ('-priority', '-datetime')
+    requests = RequestLog.objects.filter(priority__gte=lower,
+                                         priority__lte=upper)
+    if datetime:
+        requests = requests.filter(datetime__gt=datetime)
+    requests = requests.order_by(*ordering)
+    return requests[:count]
+
+
+def get_requests(request):
+    """
+    Returns requests that satisfy request in json format"""
+
+    if request.method == 'GET':
+        try:
+            requests = get_requests_by_args(*parse_args(request.GET))
+            return HttpResponse(serializers.serialize('json', requests))
+        except ValueError:
+            message = 'Parameters supposed to be int turned out not be int'
+            response = HttpResponse(message)
+            response.status_code = 422
+            return response
+    else:
+        raise Http404
+
+
+def get_last_requests(request, req_id):
     """
     Returns all requests that happened since last request ordered by datetime.
     If request does not have req_id key then HTTP 404 is returned"""
 
     req = get_object_or_404(RequestLog, pk=req_id)
-    requests = RequestLog.objects.filter(datetime__gt=req.datetime)\
-        .order_by('-datetime')[:settings.REQUESTS_ON_PAGE]
+    requests = get_requests_by_args(*parse_args(request.GET),
+                                    datetime=req.datetime)
     data = serializers.serialize('json', requests)
     return HttpResponse(data)
 

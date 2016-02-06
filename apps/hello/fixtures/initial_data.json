@@ -64,7 +64,8 @@
       "fields":{  
          "path":"/requests/",
          "method":"GET",
-         "datetime":"2016-01-28T13:39:33.421Z"
+         "datetime":"2016-01-28T13:39:33.421Z",
+         "priority": 5
       }
    },
    {  
@@ -73,7 +74,8 @@
       "fields":{  
          "path":"/requests/",
          "method":"GET",
-         "datetime":"2016-01-28T13:39:43.860Z"
+         "datetime":"2016-01-28T13:39:43.860Z",
+         "priority": 5
       }
    },
    {  
@@ -82,7 +84,8 @@
       "fields":{  
          "path":"/requests/",
          "method":"GET",
-         "datetime":"2016-01-28T13:39:44.547Z"
+         "datetime":"2016-01-28T13:39:44.547Z",
+         "priority": 5
       }
    },
    {  
@@ -91,7 +94,8 @@
       "fields":{  
          "path":"/",
          "method":"GET",
-         "datetime":"2016-01-28T13:39:47.567Z"
+         "datetime":"2016-01-28T13:39:47.567Z",
+         "priority": 5
       }
    },
    {  
