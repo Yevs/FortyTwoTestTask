@@ -34,11 +34,12 @@ class RequestTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'hello/requests.html')
         self.assertIsNotNone(response.context['requests'])
-        self.assertIn('<tr>\n'
-                      '                            <td>28/01/2016 13:01</td>\n'
-                      '                            <td>GET</td>\n'
-                      '                            <td>/</td>\n'
-                      '                        </tr>', response.content)
+        self.assertIn('<tr>\n                    '
+                      '        <td>28/01/2016 13:01</td>'
+                      '\n                            <td>GET</td>'
+                      '\n                            <td>/</td>'
+                      '\n                            <td>0</td>'
+                      '\n                        </tr>', response.content)
 
     def test_get_args(self):
         """

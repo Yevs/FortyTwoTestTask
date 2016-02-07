@@ -3,6 +3,7 @@ from django.http import HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.conf import settings
+from django.db.models import Max
 from .models import Person, RequestLog
 from .forms import PersonForm
 import json
@@ -29,9 +30,12 @@ def requests(request):
     requests = RequestLog.objects.all()\
                          .order_by('-datetime')[:settings.REQUESTS_ON_PAGE]
     last_req_id = requests[0].id
+    max_prior = RequestLog.objects.all()\
+        .aggregate(Max('priority'))['priority__max']
     return render(request, 'hello/requests.html',
                            {'requests': requests,
-                            'last_req_id': last_req_id})
+                            'last_req_id': last_req_id,
+                            'max_prior': max_prior})
 
 
 def parse_args(args):
@@ -56,11 +60,13 @@ def get_requests_by_args(count, lower, upper, order, datetime=None):
         ordering = ('-datetime', '-priority')
     else:
         ordering = ('-priority', '-datetime')
-    requests = RequestLog.objects.filter(priority__gte=lower,
-                                         priority__lte=upper)
+    filters = {
+        'priority__gte': lower,
+        'priority__lte': upper
+    }
     if datetime:
-        requests = requests.filter(datetime__gt=datetime)
-    requests = requests.order_by(*ordering)
+        filters['datetime__gt'] = datetime
+    requests = RequestLog.objects.filter(**filters).order_by(*ordering)
     return requests[:count]
 
 
@@ -73,7 +79,7 @@ def get_requests(request):
             requests = get_requests_by_args(*parse_args(request.GET))
             return HttpResponse(serializers.serialize('json', requests))
         except ValueError:
-            message = 'Parameters supposed to be int turned out not be int'
+            message = 'Parameters supposed to be int turned out not being int'
             response = HttpResponse(message)
             response.status_code = 422
             return response

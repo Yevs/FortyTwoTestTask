@@ -11,6 +11,9 @@ class IndexTest(TestCase):
 
     def setUp(self):
         self.client = Client()
+        self.auth_client = Client()
+        self.auth_client.login(username='user',
+                               password='user')
 
     def test_indexpage(self):
         """
@@ -25,6 +28,22 @@ class IndexTest(TestCase):
         self.assertIn('1997-09-16', response.content)
         self.assertIn('yevhen.yevsyuhov', response.content)
         self.assertIn('yevs@42cc.co', response.content)
+
+    def test_index_no_auth_button(self):
+        """
+        Tests whether user cannot edit data if not logged in"""
+
+        response = self.client.get('/')
+        self.assertNotIn('<button id="edit" class="btn btn-primary"'
+                         '>Edit</button>', response.content)
+
+    def test_index_auth_button(self):
+        """
+        Tests whether user can edit data if logged in"""
+
+        response = self.auth_client.get('/')
+        self.assertIn('<button id="edit" class="btn btn-primary"'
+                      '>Edit</button>', response.content)
 
     def test_indexpage_no_persons(self):
         """

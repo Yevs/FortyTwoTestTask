@@ -4,19 +4,35 @@
 {% block extra_head %}
     <link rel="stylesheet" href="{% static "css/hello/style.css" %}">
     <link rel="stylesheet" href="{% static "css/hello/requests.css" %}">
+    <link rel="stylesheet" href="{% static "css/hello/slider.css" %}">
 {% endblock extra_head %}
 {% block content %}
     {% include "hello/header.html" %}
     <span id="last-req-id" hidden>{{ last_req_id }}</span>
+    <span id="max-prior" hidden>{{ max_prior }}</span>
     <div class="jumbotron">
         <div class="row">
-            <div id="separator"></div>
             <header>Requests</header>
+            {% if max_prior != 0 %}
+                <div id="separator"></div>
+                <div id="slider-group">
+                    <span>Priority:</span>
+                    <div id="slider"></div>
+                </div>
+            {% endif %}
+            <div id="select-group">
+                <span class="">Order by:</span>
+                <select class="form-control" id="order-select" >
+                    <option value="time">Time</option>
+                    <option value="priority">Priority</option>
+                </select>
+            </div>
             <table class="table">
                 <thead id="table-headers">
                     <td>Time</td>
                     <td>Method</td>
                     <td>Path</td>
+                    <td>Priority</td>
                 </thead>
                 <tbody>
                     {% for request in requests %}
@@ -24,6 +40,7 @@
                             <td>{{ request.datetime|date:'d/m/Y H:m' }}</td>
                             <td>{{ request.method }}</td>
                             <td>{{ request.path }}</td>
+                            <td>{{ request.priority }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -33,4 +50,5 @@
 {% endblock content %}
 {% block extra_scripts %}
     <script src="{% static "js/hello/requests.js" %}"></script>
+    <script src="{% static "js/hello/bootstrap-slider.js" %}"></script>
 {% endblock extra_scripts %}
