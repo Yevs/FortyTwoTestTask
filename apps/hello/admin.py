@@ -2,7 +2,6 @@ from django.contrib import admin
 from .models import Person, RequestLog
 
 
-
 class RequestAdmin(admin.ModelAdmin):
 
     list_display = ('path', 'method', 'datetime', 'priority', )
