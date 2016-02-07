@@ -27,3 +27,17 @@
 #table-headers {
     font-weight: bold;
 }
+
+
+select#order-select {
+    width: 100px;
+    display: inline;
+}
+
+#slider-group {
+    margin-bottom: 5px;
+}
+
+.slider {
+    margin-left: 15px;
+}
