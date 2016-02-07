@@ -35,7 +35,7 @@ class RequestTest(TestCase):
         self.assertTemplateUsed(response, 'hello/requests.html')
         self.assertIsNotNone(response.context['requests'])
         self.assertIn('<tr>\n                    '
-                      '        <td>28/01/2016 13:01</td>'
+                      '        <td>28/01/2016 13:39</td>'
                       '\n                            <td>GET</td>'
                       '\n                            <td>/</td>'
                       '\n                            <td>0</td>'

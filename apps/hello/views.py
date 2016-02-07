@@ -27,8 +27,8 @@ def requests(request):
     """
     Returns page which displays list of requsts"""
 
-    requests = RequestLog.objects.all()\
-                         .order_by('-datetime')[:settings.REQUESTS_ON_PAGE]
+    requests = RequestLog.objects.all().order_by('-datetime', '-priority')
+    requests = requests[:settings.REQUESTS_ON_PAGE]
     last_req_id = requests[0].id
     max_prior = RequestLog.objects.all()\
         .aggregate(Max('priority'))['priority__max']
