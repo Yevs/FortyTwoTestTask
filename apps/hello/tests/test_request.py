@@ -16,6 +16,8 @@ class RequestTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.REQUESTS_ON_PAGE = settings.REQUESTS_ON_PAGE
+        self.auth_client = Client()
+        self.auth_client.login(username='user', password='user')
 
     def test_middleware(self):
         """
@@ -26,20 +28,73 @@ class RequestTest(TestCase):
         new_amount = len(RequestLog.objects.all())
         self.assertEqual(new_amount-old_amount, 1)
 
-    def test_request_page(self):
+    def test_request_page_no_auth(self):
         """
-        Tests whether requests page accessible and if data is there"""
+        Tests whether requests page accessible and if data is there
+        without links for editing"""
 
         response = self.client.get('/requests/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'hello/requests.html')
         self.assertIsNotNone(response.context['requests'])
-        self.assertIn('<tr>\n                    '
-                      '        <td>28/01/2016 13:39</td>'
-                      '\n                            <td>GET</td>'
-                      '\n                            <td>/</td>'
-                      '\n                            <td>0</td>'
-                      '\n                        </tr>', response.content)
+        self.assertIn('<tr>\n                            '
+                      '<td>28/01/2016 13:39</td>\n'
+                      '                            '
+                      '<td>GET</td>\n                  '
+                      '          <td>/</td>\n          '
+                      '                  <td>0</td>\n  '
+                      '                          \n     '
+                      '                   </tr>', response.content)
+
+    def test_request_page_auth(self):
+        """
+        Tests whether requests page accessible and if data is there
+        with links for editing"""
+
+        response = self.auth_client.get('/requests/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'hello/requests.html')
+        self.assertIsNotNone(response.context['requests'])
+        self.assertIn('<a href="/requests/edit/9">Edit</a>', response.content)
+
+    def test_request_edit_page_no_auth(self):
+        """
+        Tests whether request edit page is accessible only to
+        authenticated users"""
+
+        response = self.client.get('/requests/edit/1/')
+        self.assertEqual(response.status_code, 302)
+
+    def test_request_edit_page(self):
+        """
+        Tests whether request edit page is accessible by
+        authenticated users"""
+
+        response = self.auth_client.get('/requests/edit/1/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'hello/request_edit.html')
+
+    def test_form_validation(self):
+        """
+        Tests if bad form is not being validated"""
+
+        response = self.auth_client.post('/requests/edit/1/', {'priority': -1})
+        # if valid we would be redirected to another page
+        self.assertNotEqual(response.status_code, 302)
+        self.assertTrue(response.context['form']['priority'].errors)
+
+    def test_form_submission(self):
+        """
+        Tests if submitting a valid form changes a model instance"""
+
+        response = self.auth_client.post('/requests/edit/1/', {'method': 'DEL',
+                                                               'priority': 100,
+                                                               'path': '/'})
+        self.assertEqual(response.status_code, 302)
+        req = RequestLog.objects.get(pk=1)
+        self.assertEqual(req.method, 'DEL')
+        self.assertEqual(req.priority, 100)
+        self.assertEqual(req.path, '/')
 
     def test_get_args(self):
         """

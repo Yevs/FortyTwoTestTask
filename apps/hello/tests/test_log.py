@@ -12,9 +12,39 @@ class LogTest(TestCase):
                                password='user')
 
     @patch('hello.views.logger')
-    def test_error_log(self, mock_logger):
+    def test_request_ok_log(self, mock_logger):
         """
-        Tests if failed form submition is logged"""
+        Tests if failed request form submition is logged"""
+
+        data = {'method': 'DEL',
+                'priority': 100,
+                'path': '/'}
+
+        self.auth_client.post('/requests/edit/1/', data)
+        expected = u'Successfully submitted request form. '\
+                   u'Fields: method: DEL, path: /, priority: 100'
+        mock_logger.info.assert_called_with(expected)
+
+    @patch('hello.views.logger')
+    def test_request_error_log(self, mock_logger):
+        """
+        Tests if failed request form submition is logged"""
+
+        data = {'priority': -1}
+
+        self.auth_client.post('/requests/edit/1/', data)
+        expected = u'Request form submition failed. Fields: '\
+                   u'method: None, path: None, priority: -1. '\
+                   u'Errors: {"priority": ["Ensure this value '\
+                   u'is greater than or equal to 0."], "path": '\
+                   u'["This field is required."], "method": '\
+                   u'["This field is required."]}'
+        mock_logger.info.assert_called_with(expected)
+
+    @patch('hello.views.logger')
+    def test_edit_error_log(self, mock_logger):
+        """
+        Tests if failed edit form submition is logged"""
 
         data = {'first_name': '',
                 'last_name': '',
@@ -32,9 +62,9 @@ class LogTest(TestCase):
         mock_logger.info.assert_called_with(expected)
 
     @patch('hello.views.logger')
-    def test_ok_log(self, mock_logger):
+    def test_edit_ok_log(self, mock_logger):
         """
-        Tests if successful form submition is logged"""
+        Tests if successful edit form submition is logged"""
 
         data = {'first_name': 'William',
                 'last_name': 'Doe',

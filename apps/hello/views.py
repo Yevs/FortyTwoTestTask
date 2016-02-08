@@ -1,11 +1,12 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.conf import settings
 from django.db.models import Max
 from .models import Person, RequestLog
-from .forms import PersonForm
+from .forms import PersonForm, RequestForm, get_fields_str
 import json
 import logging
 
@@ -36,6 +37,33 @@ def requests(request):
                            {'requests': requests,
                             'last_req_id': last_req_id,
                             'max_prior': max_prior})
+
+
+@login_required
+def request_edit(request, req_id):
+    """
+    Returns page with form to edit request on GET.
+    Validates form and redirects to /requests/ on POST."""
+
+    req = get_object_or_404(RequestLog, pk=req_id)
+    if request.method == 'GET':
+        form = RequestForm(instance=req)
+        return render(request, 'hello/request_edit.html', {'form': form})
+    elif request.method == 'POST':
+        form = RequestForm(request.POST, instance=req)
+        if form.is_valid():
+            form.save()
+            logger.info(u'Successfully submitted request form. '
+                        u'Fields: {}'.format(get_fields_str(form)))
+            return redirect(reverse('hello:requests'))
+        else:
+            logger.info(u'Request form submition failed. Fields: {}.'
+                        u' Errors: {}'.format(get_fields_str(form),
+                                              json.dumps(form.errors)))
+            return render(request,
+                          'hello/request_edit.html',
+                          {'form': form})
+    raise Http404
 
 
 def parse_args(args):
@@ -112,12 +140,12 @@ def edit_api(request):
         if form.is_valid():
             person = form.save()
             logger.info(u'Successfully submitted form. Fields: {}'.format(
-                form.get_fields_str()))
+                get_fields_str(form, {'avatar'})))
             return HttpResponse(json.dumps({'status': 'ok',
                                             'person': person.get_dict()}))
         else:
             logger.info(u'Form submition failed. Fields: {}.'
-                        u' Errors: {}'.format(form.get_fields_str(),
+                        u' Errors: {}'.format(get_fields_str(form, {'avatar'}),
                                               json.dumps(form.errors)))
             return HttpResponse(json.dumps({'status': 'error',
                                             'errors': form.errors}))
