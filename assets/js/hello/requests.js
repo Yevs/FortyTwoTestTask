@@ -9,6 +9,7 @@ var order = 'time';  // currently selected ordering
 var unseen_amount = 0;  // amount of unsees requests (for page title)
 var select_control; 
 var slider;
+var authenticated;
 var req_queue = [];
 
 /*
@@ -200,6 +201,7 @@ function create_request(json_req) {
     from backend*/
 
     return {
+        'id': json_req['pk'],
         'path': json_req['fields']['path'],
         'method': json_req['fields']['method'],
         'priority': parseInt(json_req['fields']['priority']),
@@ -215,7 +217,12 @@ function _add_req_to_table(req) {
     append = '<tr><td>' + build_time_string(req.time) + '</td><td>'
              + req.method + '</td><td>' 
              + req.path + '</td><td>'
-             + req.priority + '</td></tr>';
+             + req.priority + '</td>';
+    if (authenticated) {
+        append += '<td><a href="/requests/edit/' +
+                  req.id + '/">Edit</a></td>'
+    }
+    append += '</tr>'
     if ($('tbody').children().length > 0) {
         $('tbody > tr:first').before(append);
     } else {
@@ -266,6 +273,7 @@ function init_variables() {
     Sets variables when page is loaded*/
 
     max_prior = parseInt($('#max-prior').text());
+    authenticated = $('#authenticated').text() == 'True';
     selected_prior_max = max_prior;
     selected_prior_min = min_prior;
     $('#slider').slider({

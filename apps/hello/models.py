@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from django.db import models
+from django.core.validators import MinValueValidator
 from PIL import Image
 import uuid
 import os
@@ -62,10 +63,20 @@ class Person(models.Model):
 
 
 class RequestLog(models.Model):
+
+    METHOD_CHOICES = (
+        ('GET', 'GET'),
+        ('POST', 'POST'),
+        ('PUT', 'PUT'),
+        ('DEL', 'DELETE'),
+    )
+
     datetime = models.DateTimeField(blank=False, auto_now_add=True)
-    method = models.CharField(blank=False, max_length=40)
+    method = models.CharField(blank=False, max_length=40,
+                              choices=METHOD_CHOICES)
     path = models.CharField(blank=False, max_length=40)
-    priority = models.IntegerField(blank=False, default=0)
+    priority = models.IntegerField(blank=False, default=0,
+                                   validators=[MinValueValidator(0)])
 
     def __unicode__(self):
         return \

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+{% block title %} Edit Request {% endblock title %}
+{% block content %}
+    {% include "hello/header.html" %}
+    <div class="jumbotron">
+        <form method="post" class="form-horizontal">
+            {% csrf_token %}
+            <div class="form-group {% if form.method.error %}has-error{% endif %}">
+                <div class="row">
+                    <span class="help-block">{{ form.method.errors }}</span>
+                </div>
+                <label for="form.method.id_for_label" class="col-sm-2">Method: </label>
+                <div class="col-sm-10">
+                    {{ form.method|add_class:'form-control' }}
+                </div>
+            </div>
+            <div class="form-group {% if form.path.error %}has-error{% endif %}">
+                <div class="row">
+                    <span class="help-block">{{ form.path.errors }}</span>
+                </div>
+                <label for="form.method.id_for_path" class="col-sm-2">Path: </label>
+                <div class="col-sm-10">
+                    {{ form.path|add_class:'form-control' }}
+                </div>
+            </div>
+            <div class="form-group {% if form.priority.error %}has-error{% endif %}">
+                <div class="row">
+                    <span class="help-block">{{ form.priority.errors }}</span>
+                </div>
+                <label for="form.priority.id_for_priority" class="col-sm-2">Priority: </label>
+                <div class="col-sm-10">
+                    {{ form.priority|add_class:'form-control'|attr:'min:0' }}
+                </div>
+            </div>
+            <button class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    <style>
+        span {
+            margin-left: 30px;
+        }
+    </style>
+{% endblock content %}

@@ -10,6 +10,7 @@
     {% include "hello/header.html" %}
     <span id="last-req-id" hidden>{{ last_req_id }}</span>
     <span id="max-prior" hidden>{{ max_prior }}</span>
+    <span id="authenticated" hidden>{{ user.is_authenticated }}</span>
     <div class="jumbotron">
         <div class="row">
             <header>Requests</header>
@@ -33,6 +34,9 @@
                     <td>Method</td>
                     <td>Path</td>
                     <td>Priority</td>
+                    {% if user.is_authenticated %}
+                        <td>Edit link</td>
+                    {% endif %}
                 </thead>
                 <tbody>
                     {% for request in requests %}
@@ -41,6 +45,9 @@
                             <td>{{ request.method }}</td>
                             <td>{{ request.path }}</td>
                             <td>{{ request.priority }}</td>
+                            {% if user.is_authenticated %}
+                                <td><a href="/requests/edit/{{request.id}}">Edit</a></td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </tbody>

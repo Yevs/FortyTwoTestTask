@@ -4,7 +4,7 @@ from .models import Person, RequestLog
 
 class RequestAdmin(admin.ModelAdmin):
 
-    list_display = ('path', 'method', 'datetime', 'priority', )
+    list_display = ('path', 'method', 'priority', )
     list_filter = ('priority', )
 
 admin.site.register(Person)
