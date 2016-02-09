@@ -29,6 +29,7 @@ class Calendar(Input):
 
 class RequestForm(ModelForm):
 
+    # so blank option would not show up in the html
     method = forms.ChoiceField(choices=RequestLog.METHOD_CHOICES)
 
     class Meta:
