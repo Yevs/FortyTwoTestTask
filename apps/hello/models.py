@@ -71,7 +71,7 @@ class RequestLog(models.Model):
         ('DEL', 'DELETE'),
     )
 
-    datetime = models.DateTimeField(blank=False, auto_now_add=True)
+    datetime = models.DateTimeField(auto_now_add=True)
     method = models.CharField(blank=False, max_length=40,
                               choices=METHOD_CHOICES)
     path = models.CharField(blank=False, max_length=40)

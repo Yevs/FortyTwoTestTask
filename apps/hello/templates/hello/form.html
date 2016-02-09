@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load widget_tweaks %}
 <div class="row">
     <form action="/edit" method="post" class="form-horizontal" enctype="multipart/form-data" id="edit-form">
         {% csrf_token %}
@@ -11,7 +12,7 @@
                 <div class="row">
                     <label for="{{ form.first_name.id_for_label }}" class="col-sm-5 control-label">Name:</label>
                     <div class="col-sm-7 control-label">
-                        {{ form.first_name }}
+                        {% render_field form.first_name class+='form-control' rows=5 placeholder='first_name' %}
                     </div>
                 </div>
             </div>
@@ -23,7 +24,7 @@
                 <div class="row">
                     <label for="{{ form.last_name.id_for_label }}" class="col-sm-5 control-label">Last name:</label>
                     <div class="col-sm-7 control-label">
-                        {{ form.last_name }}
+                        {% render_field form.last_name class+='form-control' rows=5 placeholder='Last Name' %}
                     </div>
                 </div>
             </div>
@@ -35,7 +36,7 @@
                 <div class="row">
                     <label for="{{ form.birth_date.id_for_label }}" class="col-sm-5 control-label">Date of Birth:</label>
                     <div class="col-sm-7 control-label">
-                        {{ form.birth_date }}
+                        {{ form.birth_date|add_class:'form-control' }}
                     </div>
                 </div>
             </div>
@@ -61,7 +62,7 @@
                 <div class="row">
                     <label for="{{ form.email.id_for_label }}" class="col-sm-3 control-label">Email:</label>
                     <div class="col-sm-9 control-label">
-                        {{ form.email }}
+                        {% render_field form.email class+='form-control' rows=5 placeholder='email' %}
                     </div>
                 </div>
             </div>
@@ -73,7 +74,7 @@
                 <div class="row">
                     <label for="{{ form.skype.id_for_label }}" class="col-sm-3 control-label">Skype:</label>
                     <div class="col-sm-9 control-label">
-                        {{ form.skype }}
+                        {% render_field form.skype class+='form-control' rows=5 placeholder='skype' %}
                     </div>
                 </div>
             </div>
@@ -85,7 +86,7 @@
                 <div class="row">
                     <label for="{{ form.jabber.id_for_label }}" class="col-sm-3 control-label">Jabber:</label>
                     <div class="col-sm-9 control-label">
-                        {{ form.jabber }}
+                        {% render_field form.jabber class+='form-control' rows=5 placeholder='jabber' %}
                     </div>
                 </div>
             </div>
@@ -96,7 +97,8 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <label for="{{ form.biography.id_for_label }}">Other contacts:</label>
-                        {{ form.biography }}
+                        {% render_field form.biography class+='form-control' rows=5 placeholder='Biography' %}
+                        {# {{ form.biography|add_class:'form-control' }} #}
                     </div>
                 </div>
             </div>
@@ -107,7 +109,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <label for="{{ form.other_contacts.id_for_label }}">Biography:</label>
-                        {{ form.other_contacts }}
+                        {% render_field form.other_contacts class+='form-control' rows=5 placeholder='Other contacts' %}
                     </div>
                 </div>
             </div>

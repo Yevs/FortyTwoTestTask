@@ -1,4 +1,4 @@
-from django.forms import ModelForm, TextInput, EmailInput, Textarea
+from django.forms import ModelForm
 from django.forms.widgets import Input
 from django import forms
 from .models import Person, RequestLog
@@ -45,22 +45,5 @@ class PersonForm(ModelForm):
         model = Person
         fields = '__all__'
         widgets = {
-            'first_name': TextInput(attrs={'class': 'form-control',
-                                           'placeholder': 'Name'}),
-            'last_name': TextInput(attrs={'class': 'form-control',
-                                          'placeholder': 'Last name'}),
-            'biography': Textarea(attrs={'class': 'form-control',
-                                         'placeholder': 'Your biography...',
-                                         'rows': 5}),
-            'email': EmailInput(attrs={'class': 'form-control',
-                                       'placeholder': 'user@gmail.com'}),
-            'skype': TextInput(attrs={'class': 'form-control',
-                                      'placeholder': 'Skype'}),
-            'jabber': TextInput(attrs={'class': 'form-control',
-                                       'placeholder': 'Jabber'}),
-            'other_contacts': Textarea(attrs={'class': 'form-control',
-                                              'placeholder': 'Other contacts',
-                                              'rows': 5}),
-            'birth_date': Calendar(attrs={'class': 'form-control',
-                                          'value': '1990-01-01'}),
+            'birth_date': Calendar()
         }
